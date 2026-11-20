@@ -382,104 +382,104 @@ theme_css = """
     }
 """
 
-st.markdown(f"""
+st.markdown(f"<style>{theme_css}</style>", unsafe_allow_html=True)
+
+st.markdown("""
 <style>
     /* Clean Top Workspace & Hide Deploy Button */
-    .stDeployButton {{
+    .stDeployButton {
         display: none !important;
-    }}
-    [data-testid="collapsedControl"] {{
+    }
+    [data-testid="collapsedControl"] {
         display: none !important;
-    }}
-    header[data-testid="stHeader"] {{
+    }
+    header[data-testid="stHeader"] {
         background: transparent !important;
-    }}
-    footer {{
+    }
+    footer {
         visibility: hidden !important;
-    }}
-    
-    {theme_css}
+    }
     
     /* Top Header Branding */
-    .header-branding {{
+    .header-branding {
         border-radius: 14px;
         padding: 12px 20px;
         margin-bottom: 14px;
         display: flex;
         justify-content: space-between;
         align-items: center;
-    }}
+    }
     
     /* Metric Cards */
-    .metric-card {{
+    .metric-card {
         border-radius: 12px;
         padding: 14px 18px;
         margin-bottom: 12px;
         transition: transform 0.2s ease, border-color 0.2s ease;
-    }}
-    .metric-card:hover {{
+    }
+    .metric-card:hover {
         border-color: #38bdf8 !important;
         transform: translateY(-2px);
-    }}
-    .metric-label {{
+    }
+    .metric-label {
         font-size: 0.78rem;
         font-weight: 600;
         text-transform: uppercase;
         letter-spacing: 0.05em;
         margin-bottom: 2px;
-    }}
-    .metric-value {{
+    }
+    .metric-value {
         font-size: 1.7rem;
         font-weight: 700;
         line-height: 1.2;
-    }}
-    .metric-delta-pos {{
+    }
+    .metric-delta-pos {
         font-size: 0.78rem;
         color: #10b981;
         font-weight: 600;
         margin-top: 3px;
-    }}
-    .metric-delta-neg {{
+    }
+    .metric-delta-neg {
         font-size: 0.78rem;
         color: #ef4444;
         font-weight: 600;
         margin-top: 3px;
-    }}
-    .metric-delta-neutral {{
+    }
+    .metric-delta-neutral {
         font-size: 0.78rem;
         color: #38bdf8;
         font-weight: 600;
         margin-top: 3px;
-    }}
+    }
     
     /* Informational Banners */
-    .callout-box {{
+    .callout-box {
         padding: 12px 16px;
         border-radius: 0 8px 8px 0;
         margin-bottom: 14px;
-    }}
-    .alert-box {{
+    }
+    .alert-box {
         padding: 12px 16px;
         border-radius: 0 8px 8px 0;
         margin-bottom: 14px;
-    }}
+    }
     
     /* Badges */
-    .badge-pill {{
+    .badge-pill {
         display: inline-block;
         padding: 3px 10px;
         border-radius: 12px;
         font-size: 0.72rem;
         font-weight: 700;
         letter-spacing: 0.04em;
-    }}
-    .badge-admin {{ background: #7c3aed; color: #ffffff; }}
-    .badge-manager {{ background: #2563eb; color: #ffffff; }}
-    .badge-lead {{ background: #059669; color: #ffffff; }}
-    .badge-lnd {{ background: #d97706; color: #ffffff; }}
+    }
+    .badge-admin { background: #7c3aed; color: #ffffff; }
+    .badge-manager { background: #2563eb; color: #ffffff; }
+    .badge-lead { background: #059669; color: #ffffff; }
+    .badge-lnd { background: #d97706; color: #ffffff; }
 
     /* Top Executive Navbar Bar */
-    div[data-testid="stRadio"] > div[role="radiogroup"] {{
+    div[data-testid="stRadio"] > div[role="radiogroup"] {
         display: flex;
         flex-direction: row;
         justify-content: space-around;
@@ -487,35 +487,35 @@ st.markdown(f"""
         padding: 8px;
         border-radius: 12px;
         margin-bottom: 14px;
-    }}
-    div[data-testid="stRadio"] label {{
+    }
+    div[data-testid="stRadio"] label {
         cursor: pointer;
         font-weight: 600;
-    }}
+    }
 
     /* Right-Side Filter Pane Card (Power BI Aesthetic) */
-    .right-filter-pane {{
+    .right-filter-pane {
         border-radius: 14px;
         padding: 16px 14px;
         position: sticky;
         top: 25px;
         margin-top: 6px;
-    }}
-    .filter-header-box {{
+    }
+    .filter-header-box {
         display: flex;
         align-items: center;
         justify-content: space-between;
         padding-bottom: 8px;
         margin-bottom: 12px;
-    }}
-    .filter-title-text {{
+    }
+    .filter-title-text {
         font-size: 0.95rem;
         font-weight: 700;
         display: flex;
         align-items: center;
         gap: 6px;
-    }}
-    .filter-badge-text {{
+    }
+    .filter-badge-text {
         background: #2563eb26;
         color: #38bdf8;
         border: 1px solid #38bdf84d;
@@ -523,8 +523,7 @@ st.markdown(f"""
         border-radius: 10px;
         font-size: 0.72rem;
         font-weight: 600;
-    }}
-    
+    }
     
     /* Primary Split-Screen Submit Button (Electric Royal Blue with Arrow) */
     div[data-testid="stFormSubmitButton"] > button {
@@ -561,14 +560,14 @@ st.markdown(f"""
     }
 
     /* Printable Memo Card */
-    .print-card {{
+    .print-card {
         background: #ffffff;
         color: #0f172a;
         padding: 24px;
         border-radius: 8px;
         border: 1px solid #cbd5e1;
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }}
+    }
 </style>
 """, unsafe_allow_html=True)
 
