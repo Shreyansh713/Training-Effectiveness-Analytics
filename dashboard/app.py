@@ -16,6 +16,7 @@ Features:
 
 import os
 import sys
+import textwrap
 import numpy as np
 import pandas as pd
 import plotly.express as px
@@ -611,66 +612,66 @@ if not st.session_state['authenticated']:
 
     # --- LEFT HERO BRANDING PANE ---
     with col_hero:
-        st.markdown("""
-        <div style="background: radial-gradient(circle at 20% 20%, #1e40af 0%, #172554 55%, #09122c 100%); border-radius: 24px; padding: 48px 42px; border: 1px solid rgba(59, 130, 246, 0.35); box-shadow: 0 20px 45px -12px rgba(15, 23, 42, 0.45); min-height: 590px; display: flex; flex-direction: column; justify-content: space-between;">
-            <div>
-                <!-- Brand Logo & Title -->
-                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 24px;">
-                    <div style="background: linear-gradient(135deg, #38bdf8 0%, #2563eb 100%); width: 42px; height: 42px; border-radius: 12px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);">
-                        <span style="font-size: 22px;">🎓</span>
-                    </div>
-                    <span style="font-size: 1.6rem; font-weight: 800; color: #ffffff; letter-spacing: -0.02em;">TalentMetrics</span>
-                </div>
-
-                <!-- Workspace Category Sub-tag -->
-                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 24px;">
-                    <span style="width: 7px; height: 7px; border-radius: 50%; background-color: #38bdf8; display: inline-block;"></span>
-                    <span style="font-size: 0.74rem; font-weight: 700; color: #93c5fd; letter-spacing: 0.14em; text-transform: uppercase;">ENTERPRISE L&D INTELLIGENCE</span>
-                </div>
-
-                <!-- Massive Bold Headline (Reference Style) -->
-                <h1 style="font-size: 3.3rem; font-weight: 800; line-height: 1.12; color: #ffffff; margin: 0 0 18px 0; letter-spacing: -0.035em;">
-                    Every employee.<br>Every milestone.
-                </h1>
-
-                <!-- Subtitle Description -->
-                <p style="font-size: 1.05rem; line-height: 1.65; color: #cbd5e1; margin-bottom: 36px; max-width: 440px;">
-                    Measure training efficacy, track performance rating uplifts, and safeguard high-value talent across all departments with verified data intelligence.
-                </p>
+        st.markdown(textwrap.dedent("""
+<div style="background: radial-gradient(circle at 20% 20%, #1e40af 0%, #172554 55%, #09122c 100%); border-radius: 24px; padding: 48px 42px; border: 1px solid rgba(59, 130, 246, 0.35); box-shadow: 0 20px 45px -12px rgba(15, 23, 42, 0.45); min-height: 590px; display: flex; flex-direction: column; justify-content: space-between;">
+    <div>
+        <!-- Brand Logo & Title -->
+        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 24px;">
+            <div style="background: linear-gradient(135deg, #38bdf8 0%, #2563eb 100%); width: 42px; height: 42px; border-radius: 12px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);">
+                <span style="font-size: 22px;">🎓</span>
             </div>
-
-            <!-- Bottom Floating 3D Feature Cards -->
-            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 40px; padding-top: 24px; border-top: 1px solid rgba(255, 255, 255, 0.12);">
-                <div class="hero-feature-card">
-                    <span style="font-size: 1.45rem;">📊</span><br>
-                    <span style="font-size: 0.72rem; font-weight: 600; color: #e2e8f0; margin-top: 4px; display: inline-block;">ROI Model</span>
-                </div>
-                <div style="background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); border: 1px solid #60a5fa; border-radius: 14px; padding: 14px 10px; text-align: center; box-shadow: 0 8px 16px -4px rgba(37, 99, 235, 0.5);">
-                    <span style="font-size: 1.45rem;">🎓</span><br>
-                    <span style="font-size: 0.72rem; font-weight: 700; color: #ffffff; margin-top: 4px; display: inline-block;">5,000 Staff</span>
-                </div>
-                <div class="hero-feature-card">
-                    <span style="font-size: 1.45rem;">🚨</span><br>
-                    <span style="font-size: 0.72rem; font-weight: 600; color: #e2e8f0; margin-top: 4px; display: inline-block;">Flight Risk</span>
-                </div>
-                <div class="hero-feature-card">
-                    <span style="font-size: 1.45rem;">📈</span><br>
-                    <span style="font-size: 0.72rem; font-weight: 600; color: #e2e8f0; margin-top: 4px; display: inline-block;">Uplift +0.53</span>
-                </div>
-            </div>
+            <span style="font-size: 1.6rem; font-weight: 800; color: #ffffff; letter-spacing: -0.02em;">TalentMetrics</span>
         </div>
-        """, unsafe_allow_html=True)
+
+        <!-- Workspace Category Sub-tag -->
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 24px;">
+            <span style="width: 7px; height: 7px; border-radius: 50%; background-color: #38bdf8; display: inline-block;"></span>
+            <span style="font-size: 0.74rem; font-weight: 700; color: #93c5fd; letter-spacing: 0.14em; text-transform: uppercase;">ENTERPRISE L&D INTELLIGENCE</span>
+        </div>
+
+        <!-- Massive Bold Headline (Reference Style) -->
+        <h1 style="font-size: 3.3rem; font-weight: 800; line-height: 1.12; color: #ffffff; margin: 0 0 18px 0; letter-spacing: -0.035em;">
+            Every employee.<br>Every milestone.
+        </h1>
+
+        <!-- Subtitle Description -->
+        <p style="font-size: 1.05rem; line-height: 1.65; color: #cbd5e1; margin-bottom: 36px; max-width: 440px;">
+            Measure training efficacy, track performance rating uplifts, and safeguard high-value talent across all departments with verified data intelligence.
+        </p>
+    </div>
+
+    <!-- Bottom Floating 3D Feature Cards -->
+    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 40px; padding-top: 24px; border-top: 1px solid rgba(255, 255, 255, 0.12);">
+        <div class="hero-feature-card">
+            <span style="font-size: 1.45rem;">📊</span><br>
+            <span style="font-size: 0.72rem; font-weight: 600; color: #e2e8f0; margin-top: 4px; display: inline-block;">ROI Model</span>
+        </div>
+        <div style="background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); border: 1px solid #60a5fa; border-radius: 14px; padding: 14px 10px; text-align: center; box-shadow: 0 8px 16px -4px rgba(37, 99, 235, 0.5);">
+            <span style="font-size: 1.45rem;">🎓</span><br>
+            <span style="font-size: 0.72rem; font-weight: 700; color: #ffffff; margin-top: 4px; display: inline-block;">5,000 Staff</span>
+        </div>
+        <div class="hero-feature-card">
+            <span style="font-size: 1.45rem;">🚨</span><br>
+            <span style="font-size: 0.72rem; font-weight: 600; color: #e2e8f0; margin-top: 4px; display: inline-block;">Flight Risk</span>
+        </div>
+        <div class="hero-feature-card">
+            <span style="font-size: 1.45rem;">📈</span><br>
+            <span style="font-size: 0.72rem; font-weight: 600; color: #e2e8f0; margin-top: 4px; display: inline-block;">Uplift +0.53</span>
+        </div>
+    </div>
+</div>
+        """).strip(), unsafe_allow_html=True)
 
     # --- RIGHT AUTH FORM PANE ---
     with col_form:
         if st.session_state['auth_mode'] == 'login':
             # WELCOME BACK (LOGIN)
-            st.markdown("""
-            <div style="margin-bottom: 20px;">
-                <h1 style="font-size: 2.4rem; font-weight: 800; margin-bottom: 4px; letter-spacing: -0.025em;">Welcome back</h1>
-                <p style="font-size: 0.96rem; opacity: 0.75; margin-bottom: 0;">Sign in to your TalentMetrics enterprise portal.</p>
-            </div>
-            """, unsafe_allow_html=True)
+            st.markdown(textwrap.dedent("""
+<div style="margin-bottom: 20px;">
+    <h1 style="font-size: 2.4rem; font-weight: 800; margin-bottom: 4px; letter-spacing: -0.025em;">Welcome back</h1>
+    <p style="font-size: 0.96rem; opacity: 0.75; margin-bottom: 0;">Sign in to your TalentMetrics enterprise portal.</p>
+</div>
+            """).strip(), unsafe_allow_html=True)
 
             with st.form("login_form"):
                 st.markdown("**Username**")
@@ -745,12 +746,12 @@ if not st.session_state['authenticated']:
 
         else:
             # CREATE AN ACCOUNT (REGISTER)
-            st.markdown("""
-            <div style="margin-bottom: 20px;">
-                <h1 style="font-size: 2.4rem; font-weight: 800; margin-bottom: 4px; letter-spacing: -0.025em;">Create an account</h1>
-                <p style="font-size: 0.96rem; opacity: 0.75; margin-bottom: 0;">Register for departmental access and talent analytics.</p>
-            </div>
-            """, unsafe_allow_html=True)
+            st.markdown(textwrap.dedent("""
+<div style="margin-bottom: 20px;">
+    <h1 style="font-size: 2.4rem; font-weight: 800; margin-bottom: 4px; letter-spacing: -0.025em;">Create an account</h1>
+    <p style="font-size: 0.96rem; opacity: 0.75; margin-bottom: 0;">Register for departmental access and talent analytics.</p>
+</div>
+            """).strip(), unsafe_allow_html=True)
 
             with st.form("register_form"):
                 st.markdown("**Username**")
