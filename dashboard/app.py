@@ -49,6 +49,32 @@ st.set_page_config(
 # Ensure database is initialized
 init_database()
 
+# Universal Plotly Theme Helper (Responsive to Light, Dark & System Themes)
+def apply_plot_theme(fig, height=None):
+    layout_dict = {
+        'paper_bgcolor': 'rgba(0,0,0,0)',
+        'plot_bgcolor': 'rgba(0,0,0,0)',
+        'font': dict(family='Inter, Segoe UI, sans-serif', color='#94a3b8'),
+        'legend': dict(bgcolor='rgba(0,0,0,0)', font=dict(color='#94a3b8'))
+    }
+    if height:
+        layout_dict['height'] = height
+    fig.update_layout(**layout_dict)
+    fig.update_xaxes(
+        showgrid=True,
+        gridcolor='rgba(148, 163, 184, 0.15)',
+        linecolor='rgba(148, 163, 184, 0.25)',
+        tickfont=dict(color='#94a3b8')
+    )
+    fig.update_yaxes(
+        showgrid=True,
+        gridcolor='rgba(148, 163, 184, 0.15)',
+        linecolor='rgba(148, 163, 184, 0.25)',
+        tickfont=dict(color='#94a3b8')
+    )
+    return fig
+
+
 # High-End Visual Appearance & Right-Pane CSS
 st.markdown("""
 <style>
@@ -57,15 +83,30 @@ st.markdown("""
         display: none;
     }
     
-    /* Main Background & Card Styling */
+    /* Clean Top Workspace & Hide Deploy Button */
+    .stDeployButton {
+        display: none !important;
+    }
+    [data-testid="collapsedControl"] {
+        display: none !important;
+    }
+    header[data-testid="stHeader"] {
+        background: transparent !important;
+    }
+    footer {
+        visibility: hidden !important;
+    }
+    
+    /* Main Background & Card Styling (Theme Responsive) */
     .stApp {
-        background-color: #0b1120;
+        background-color: var(--background-color, #0f172a);
+        color: var(--text-color, #f8fafc);
     }
     
     /* Top Header Branding */
     .header-branding {
-        background: linear-gradient(90deg, #1e293b 0%, #0f172a 100%);
-        border: 1px solid #334155;
+        background: var(--secondary-background-color, #1e293b);
+        border: 1px solid rgba(148, 163, 184, 0.25);
         border-radius: 14px;
         padding: 12px 20px;
         margin-bottom: 14px;
@@ -77,8 +118,8 @@ st.markdown("""
     
     /* Metric Cards */
     .metric-card {
-        background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-        border: 1px solid #334155;
+        background: var(--secondary-background-color, #1e293b);
+        border: 1px solid rgba(148, 163, 184, 0.22);
         border-radius: 12px;
         padding: 14px 18px;
         box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.25);
@@ -160,10 +201,10 @@ st.markdown("""
         flex-direction: row;
         justify-content: space-around;
         gap: 10px;
-        background: #1e293b;
-        padding: 6px;
+        background: var(--secondary-background-color, #1e293b);
+        padding: 8px;
         border-radius: 12px;
-        border: 1px solid #334155;
+        border: 1px solid rgba(148, 163, 184, 0.25);
         margin-bottom: 14px;
     }
     div[data-testid="stRadio"] label {
@@ -173,13 +214,14 @@ st.markdown("""
 
     /* Right-Side Filter Pane Card (Power BI Aesthetic) */
     .right-filter-pane {
-        background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
-        border: 1px solid #334155;
+        background: var(--secondary-background-color, #1e293b);
+        border: 1px solid rgba(148, 163, 184, 0.25);
         border-radius: 14px;
         padding: 16px 14px;
-        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.35);
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15);
         position: sticky;
-        top: 15px;
+        top: 25px;
+        margin-top: 6px;
     }
     .filter-header-box {
         display: flex;
@@ -192,7 +234,7 @@ st.markdown("""
     .filter-title-text {
         font-size: 0.95rem;
         font-weight: 700;
-        color: #f8fafc;
+        color: var(--text-color, #f8fafc);
         display: flex;
         align-items: center;
         gap: 6px;
@@ -350,7 +392,7 @@ with col_top1:
         <h2 style="margin:0;">🎯 Enterprise Training Effectiveness Portal</h2>
         <span class="badge-pill {badge_class}">{user_role.upper()}</span>
     </div>
-    <span style="color:#94a3b8; font-size:0.86rem;">Signed in as <b>{current_user['full_name']}</b> ({current_user['email']}) · Scope: <b>{user_dept if user_role == 'Department Lead' else 'Global Enterprise'}</b></span>
+    <span style="color:var(--text-color, #94a3b8); opacity:0.8; font-size:0.86rem;">Signed in as <b>{current_user['full_name']}</b> ({current_user['email']}) · Scope: <b>{user_dept if user_role == 'Department Lead' else 'Global Enterprise'}</b></span>
     """, unsafe_allow_html=True)
 with col_top2:
     if st.button("🚪 Sign Out", use_container_width=True):
@@ -609,7 +651,7 @@ with col_content:
                 plot_bgcolor='rgba(0,0,0,0)',
                 legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
             )
-            st.plotly_chart(fig_ratings, use_container_width=True)
+            st.plotly_chart(apply_plot_theme(fig_ratings), use_container_width=True)
 
         with col_b:
             tier_counts = df['training_tier'].value_counts().reset_index()
@@ -626,7 +668,7 @@ with col_content:
                 template='plotly_dark'
             )
             fig_pie.update_layout(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)')
-            st.plotly_chart(fig_pie, use_container_width=True)
+            st.plotly_chart(apply_plot_theme(fig_pie), use_container_width=True)
 
         col_t1, col_t2 = st.columns(2)
         with col_t1:
@@ -656,7 +698,7 @@ with col_content:
                 plot_bgcolor='rgba(0,0,0,0)',
                 legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
             )
-            st.plotly_chart(fig_trend, use_container_width=True)
+            st.plotly_chart(apply_plot_theme(fig_trend), use_container_width=True)
 
         with col_t2:
             city_stats = df.groupby('city').agg(
@@ -675,7 +717,7 @@ with col_content:
             )
             fig_city.update_traces(textposition='top center')
             fig_city.update_layout(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)')
-            st.plotly_chart(fig_city, use_container_width=True)
+            st.plotly_chart(apply_plot_theme(fig_city), use_container_width=True)
 
     # =========================================================
     # MODULE 2: 🏢 WORKFORCE ANALYTICS
@@ -713,7 +755,7 @@ with col_content:
                     template='plotly_dark'
                 )
                 fig_dept_uplift.update_layout(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)')
-                st.plotly_chart(fig_dept_uplift, use_container_width=True)
+                st.plotly_chart(apply_plot_theme(fig_dept_uplift), use_container_width=True)
 
             with col_d2:
                 fig_pre_post = go.Figure()
@@ -733,7 +775,7 @@ with col_content:
                     paper_bgcolor='rgba(0,0,0,0)',
                     plot_bgcolor='rgba(0,0,0,0)'
                 )
-                st.plotly_chart(fig_pre_post, use_container_width=True)
+                st.plotly_chart(apply_plot_theme(fig_pre_post), use_container_width=True)
 
             st.markdown("#### Department Performance Benchmark Table")
             st.dataframe(
@@ -774,7 +816,7 @@ with col_content:
             )
             fig_bubble.update_traces(textposition='top center')
             fig_bubble.update_layout(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)')
-            st.plotly_chart(fig_bubble, use_container_width=True)
+            st.plotly_chart(apply_plot_theme(fig_bubble), use_container_width=True)
 
             col_p1, col_p2 = st.columns(2)
             with col_p1:
@@ -787,7 +829,7 @@ with col_content:
                     template='plotly_dark'
                 )
                 fig_score_uplift.update_layout(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)')
-                st.plotly_chart(fig_score_uplift, use_container_width=True)
+                st.plotly_chart(apply_plot_theme(fig_score_uplift), use_container_width=True)
 
             with col_p2:
                 st.markdown("#### Program Financial Metrics")
@@ -825,7 +867,7 @@ with col_content:
                     template='plotly_dark'
                 )
                 fig_late.update_layout(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)')
-                st.plotly_chart(fig_late, use_container_width=True)
+                st.plotly_chart(apply_plot_theme(fig_late), use_container_width=True)
 
             with col_att2:
                 fig_att = px.box(
@@ -835,7 +877,7 @@ with col_content:
                     template='plotly_dark'
                 )
                 fig_att.update_layout(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)')
-                st.plotly_chart(fig_att, use_container_width=True)
+                st.plotly_chart(apply_plot_theme(fig_att), use_container_width=True)
 
             fig_corr_late = px.scatter(
                 df.sample(min(len(df), 600), random_state=42),
@@ -847,7 +889,7 @@ with col_content:
                 template='plotly_dark'
             )
             fig_corr_late.update_layout(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)')
-            st.plotly_chart(fig_corr_late, use_container_width=True)
+            st.plotly_chart(apply_plot_theme(fig_corr_late), use_container_width=True)
 
         with sub_analytics[3]:
             st.subheader("📉 Diminishing Marginal Returns Analysis")
@@ -886,7 +928,7 @@ with col_content:
                 paper_bgcolor='rgba(0,0,0,0)',
                 plot_bgcolor='rgba(0,0,0,0)'
             )
-            st.plotly_chart(fig_diminishing, use_container_width=True)
+            st.plotly_chart(apply_plot_theme(fig_diminishing), use_container_width=True)
             st.info("💡 **Executive Takeaway:** Training hours between **35 and 48 hours** yield the highest marginal gain per rupee invested (+0.81 rating points). Beyond 52 hours, marginal rating gains plateau.")
 
         with sub_analytics[4]:
@@ -912,7 +954,7 @@ with col_content:
                     template='plotly_dark'
                 )
                 fig_gender_bar.update_layout(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)')
-                st.plotly_chart(fig_gender_bar, use_container_width=True)
+                st.plotly_chart(apply_plot_theme(fig_gender_bar), use_container_width=True)
 
             with col_g2:
                 fig_gender_pie = px.pie(
@@ -922,7 +964,7 @@ with col_content:
                     template='plotly_dark'
                 )
                 fig_gender_pie.update_layout(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)')
-                st.plotly_chart(fig_gender_pie, use_container_width=True)
+                st.plotly_chart(apply_plot_theme(fig_gender_pie), use_container_width=True)
 
             st.markdown("#### Gender Equity Benchmark Table")
             st.dataframe(
@@ -994,7 +1036,7 @@ with col_content:
                     template='plotly_dark'
                 )
                 fig_cohort.update_layout(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)')
-                st.plotly_chart(fig_cohort, use_container_width=True)
+                st.plotly_chart(apply_plot_theme(fig_cohort), use_container_width=True)
 
             with col_ret2:
                 st.markdown("#### Flight Risk Cohort Summary")
@@ -1136,7 +1178,7 @@ with col_content:
                 title="Interactive Pearson Correlation Heatmap", template='plotly_dark'
             )
             fig_corr.update_layout(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)')
-            st.plotly_chart(fig_corr, use_container_width=True)
+            st.plotly_chart(apply_plot_theme(fig_corr), use_container_width=True)
 
     # =========================================================
     # MODULE 4: ⚙️ OPERATIONS & GOVERNANCE
