@@ -33,6 +33,7 @@ except ImportError:
 # Import Database and Auth engine
 from dashboard.db import (
     init_database, authenticate_user, register_user,
+    validate_session, destroy_session,
     get_live_analytics_data, onboard_new_employee,
     log_training_completion, apply_retention_intervention,
     get_audit_trail, get_interventions_log, AUTH_KEYS
@@ -49,197 +50,286 @@ st.set_page_config(
 # Ensure database is initialized
 init_database()
 
-# Universal Plotly Theme Helper (Responsive to Light, Dark & System Themes)
+# Theme State Initialization (Persisted in URL query params)
+if 'app_theme' not in st.session_state:
+    st.session_state['app_theme'] = st.query_params.get("theme", "dark")
+else:
+    if st.query_params.get("theme") != st.session_state['app_theme']:
+        st.query_params["theme"] = st.session_state['app_theme']
+
+current_theme = st.session_state['app_theme']
+
+# Universal Plotly Theme Helper (Responsive to Light & Dark Themes)
 def apply_plot_theme(fig, height=None):
+    is_light = (st.session_state.get('app_theme', 'dark') == 'light')
+    text_color = '#334155' if is_light else '#94a3b8'
+    grid_color = 'rgba(203, 213, 225, 0.4)' if is_light else 'rgba(148, 163, 184, 0.15)'
+    line_color = '#cbd5e1' if is_light else 'rgba(148, 163, 184, 0.25)'
     layout_dict = {
         'paper_bgcolor': 'rgba(0,0,0,0)',
         'plot_bgcolor': 'rgba(0,0,0,0)',
-        'font': dict(family='Inter, Segoe UI, sans-serif', color='#94a3b8'),
-        'legend': dict(bgcolor='rgba(0,0,0,0)', font=dict(color='#94a3b8'))
+        'font': dict(family='Inter, Segoe UI, sans-serif', color=text_color),
+        'legend': dict(bgcolor='rgba(0,0,0,0)', font=dict(color=text_color))
     }
     if height:
         layout_dict['height'] = height
     fig.update_layout(**layout_dict)
     fig.update_xaxes(
         showgrid=True,
-        gridcolor='rgba(148, 163, 184, 0.15)',
-        linecolor='rgba(148, 163, 184, 0.25)',
-        tickfont=dict(color='#94a3b8')
+        gridcolor=grid_color,
+        linecolor=line_color,
+        tickfont=dict(color=text_color),
+        title_font=dict(color=text_color)
     )
     fig.update_yaxes(
         showgrid=True,
-        gridcolor='rgba(148, 163, 184, 0.15)',
-        linecolor='rgba(148, 163, 184, 0.25)',
-        tickfont=dict(color='#94a3b8')
+        gridcolor=grid_color,
+        linecolor=line_color,
+        tickfont=dict(color=text_color),
+        title_font=dict(color=text_color)
     )
     return fig
 
 
 # High-End Visual Appearance & Right-Pane CSS
-st.markdown("""
-<style>
-    /* Hide Default Left Sidebar Toggle for Clean Workspace */
-    [data-testid="collapsedControl"] {
-        display: none;
-    }
-    
-    /* Clean Top Workspace & Hide Deploy Button */
-    .stDeployButton {
-        display: none !important;
-    }
-    [data-testid="collapsedControl"] {
-        display: none !important;
-    }
-    header[data-testid="stHeader"] {
-        background: transparent !important;
-    }
-    footer {
-        visibility: hidden !important;
-    }
-    
-    /* Main Background & Card Styling (Theme Responsive) */
+theme_css = """
     .stApp {
-        background-color: var(--background-color, #0f172a);
-        color: var(--text-color, #f8fafc);
+        background-color: #f1f5f9 !important;
+        color: #0f172a !important;
     }
+    .header-branding {
+        background: #ffffff !important;
+        border: 1px solid #cbd5e1 !important;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05) !important;
+    }
+    .metric-card {
+        background: #ffffff !important;
+        border: 1px solid #e2e8f0 !important;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05) !important;
+    }
+    .metric-value {
+        color: #0f172a !important;
+    }
+    .metric-label {
+        color: #64748b !important;
+    }
+    div[data-testid="stRadio"] > div[role="radiogroup"] {
+        background: #ffffff !important;
+        border: 1px solid #cbd5e1 !important;
+    }
+    div[data-testid="stRadio"] label span {
+        color: #0f172a !important;
+    }
+    .right-filter-pane {
+        background: #ffffff !important;
+        border: 1px solid #cbd5e1 !important;
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08) !important;
+    }
+    .filter-header-box {
+        border-bottom: 1px solid #e2e8f0 !important;
+    }
+    .filter-title-text {
+        color: #0f172a !important;
+    }
+    .callout-box {
+        background: #eff6ff !important;
+        border-left: 4px solid #3b82f6 !important;
+        color: #1e3a8a !important;
+        border: 1px solid #dbeafe !important;
+        border-left: 4px solid #3b82f6 !important;
+    }
+    .alert-box {
+        background: #fef2f2 !important;
+        border-left: 4px solid #ef4444 !important;
+        color: #991b1b !important;
+        border: 1px solid #fee2e2 !important;
+        border-left: 4px solid #ef4444 !important;
+    }
+""" if current_theme == "light" else """
+    .stApp {
+        background-color: #0b1120 !important;
+        color: #f8fafc !important;
+    }
+    .header-branding {
+        background: #1e293b !important;
+        border: 1px solid #334155 !important;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2) !important;
+    }
+    .metric-card {
+        background: #1e293b !important;
+        border: 1px solid #334155 !important;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.25) !important;
+    }
+    .metric-value {
+        color: #f8fafc !important;
+    }
+    .metric-label {
+        color: #94a3b8 !important;
+    }
+    div[data-testid="stRadio"] > div[role="radiogroup"] {
+        background: #1e293b !important;
+        border: 1px solid #334155 !important;
+    }
+    div[data-testid="stRadio"] label span {
+        color: #f8fafc !important;
+    }
+    .right-filter-pane {
+        background: #1e293b !important;
+        border: 1px solid #334155 !important;
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.35) !important;
+    }
+    .filter-header-box {
+        border-bottom: 1px solid #334155 !important;
+    }
+    .filter-title-text {
+        color: #f8fafc !important;
+    }
+    .callout-box {
+        background: rgba(37, 99, 235, 0.12) !important;
+        border-left: 4px solid #3b82f6 !important;
+        color: #e2e8f0 !important;
+    }
+    .alert-box {
+        background: rgba(239, 68, 68, 0.14) !important;
+        border-left: 4px solid #ef4444 !important;
+        color: #fecaca !important;
+    }
+"""
+
+st.markdown(f"""
+<style>
+    /* Clean Top Workspace & Hide Deploy Button */
+    .stDeployButton {{
+        display: none !important;
+    }}
+    [data-testid="collapsedControl"] {{
+        display: none !important;
+    }}
+    header[data-testid="stHeader"] {{
+        background: transparent !important;
+    }}
+    footer {{
+        visibility: hidden !important;
+    }}
+    
+    {theme_css}
     
     /* Top Header Branding */
-    .header-branding {
-        background: var(--secondary-background-color, #1e293b);
-        border: 1px solid rgba(148, 163, 184, 0.25);
+    .header-branding {{
         border-radius: 14px;
         padding: 12px 20px;
         margin-bottom: 14px;
         display: flex;
         justify-content: space-between;
         align-items: center;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
-    }
+    }}
     
     /* Metric Cards */
-    .metric-card {
-        background: var(--secondary-background-color, #1e293b);
-        border: 1px solid rgba(148, 163, 184, 0.22);
+    .metric-card {{
         border-radius: 12px;
         padding: 14px 18px;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.25);
         margin-bottom: 12px;
         transition: transform 0.2s ease, border-color 0.2s ease;
-    }
-    .metric-card:hover {
-        border-color: #38bdf8;
+    }}
+    .metric-card:hover {{
+        border-color: #38bdf8 !important;
         transform: translateY(-2px);
-    }
-    .metric-label {
+    }}
+    .metric-label {{
         font-size: 0.78rem;
-        color: #94a3b8;
         font-weight: 600;
         text-transform: uppercase;
         letter-spacing: 0.05em;
         margin-bottom: 2px;
-    }
-    .metric-value {
+    }}
+    .metric-value {{
         font-size: 1.7rem;
         font-weight: 700;
-        color: #f8fafc;
         line-height: 1.2;
-    }
-    .metric-delta-pos {
+    }}
+    .metric-delta-pos {{
         font-size: 0.78rem;
         color: #10b981;
         font-weight: 600;
         margin-top: 3px;
-    }
-    .metric-delta-neg {
+    }}
+    .metric-delta-neg {{
         font-size: 0.78rem;
         color: #ef4444;
         font-weight: 600;
         margin-top: 3px;
-    }
-    .metric-delta-neutral {
+    }}
+    .metric-delta-neutral {{
         font-size: 0.78rem;
         color: #38bdf8;
         font-weight: 600;
         margin-top: 3px;
-    }
+    }}
     
     /* Informational Banners */
-    .callout-box {
-        background: rgba(37, 99, 235, 0.12);
-        border-left: 4px solid #3b82f6;
+    .callout-box {{
         padding: 12px 16px;
         border-radius: 0 8px 8px 0;
         margin-bottom: 14px;
-        color: #e2e8f0;
-    }
-    .alert-box {
-        background: rgba(239, 68, 68, 0.14);
-        border-left: 4px solid #ef4444;
+    }}
+    .alert-box {{
         padding: 12px 16px;
         border-radius: 0 8px 8px 0;
         margin-bottom: 14px;
-        color: #fecaca;
-    }
+    }}
     
     /* Badges */
-    .badge-pill {
+    .badge-pill {{
         display: inline-block;
         padding: 3px 10px;
         border-radius: 12px;
         font-size: 0.72rem;
         font-weight: 700;
         letter-spacing: 0.04em;
-    }
-    .badge-admin { background: #7c3aed; color: #ffffff; }
-    .badge-manager { background: #2563eb; color: #ffffff; }
-    .badge-lead { background: #059669; color: #ffffff; }
-    .badge-lnd { background: #d97706; color: #ffffff; }
+    }}
+    .badge-admin {{ background: #7c3aed; color: #ffffff; }}
+    .badge-manager {{ background: #2563eb; color: #ffffff; }}
+    .badge-lead {{ background: #059669; color: #ffffff; }}
+    .badge-lnd {{ background: #d97706; color: #ffffff; }}
 
     /* Top Executive Navbar Bar */
-    div[data-testid="stRadio"] > div[role="radiogroup"] {
+    div[data-testid="stRadio"] > div[role="radiogroup"] {{
         display: flex;
         flex-direction: row;
         justify-content: space-around;
         gap: 10px;
-        background: var(--secondary-background-color, #1e293b);
         padding: 8px;
         border-radius: 12px;
-        border: 1px solid rgba(148, 163, 184, 0.25);
         margin-bottom: 14px;
-    }
-    div[data-testid="stRadio"] label {
+    }}
+    div[data-testid="stRadio"] label {{
         cursor: pointer;
         font-weight: 600;
-    }
+    }}
 
     /* Right-Side Filter Pane Card (Power BI Aesthetic) */
-    .right-filter-pane {
-        background: var(--secondary-background-color, #1e293b);
-        border: 1px solid rgba(148, 163, 184, 0.25);
+    .right-filter-pane {{
         border-radius: 14px;
         padding: 16px 14px;
-        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15);
         position: sticky;
         top: 25px;
         margin-top: 6px;
-    }
-    .filter-header-box {
+    }}
+    .filter-header-box {{
         display: flex;
         align-items: center;
         justify-content: space-between;
-        border-bottom: 1px solid #334155;
         padding-bottom: 8px;
         margin-bottom: 12px;
-    }
-    .filter-title-text {
+    }}
+    .filter-title-text {{
         font-size: 0.95rem;
         font-weight: 700;
-        color: var(--text-color, #f8fafc);
         display: flex;
         align-items: center;
         gap: 6px;
-    }
-    .filter-badge-text {
+    }}
+    .filter-badge-text {{
         background: #2563eb26;
         color: #38bdf8;
         border: 1px solid #38bdf84d;
@@ -247,32 +337,53 @@ st.markdown("""
         border-radius: 10px;
         font-size: 0.72rem;
         font-weight: 600;
-    }
+    }}
     
     /* Printable Memo Card */
-    .print-card {
+    .print-card {{
         background: #ffffff;
         color: #0f172a;
         padding: 24px;
         border-radius: 8px;
         border: 1px solid #cbd5e1;
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
+    }}
 </style>
 """, unsafe_allow_html=True)
 
-# Initialize Session State
-if 'authenticated' not in st.session_state:
-    st.session_state['authenticated'] = False
-if 'user' not in st.session_state:
-    st.session_state['user'] = None
+# Initialize & Restore Persistent Session across Browser Reloads
+if 'authenticated' not in st.session_state or not st.session_state['authenticated']:
+    token_param = st.query_params.get("session")
+    if token_param:
+        validated_user = validate_session(token_param)
+        if validated_user:
+            st.session_state['authenticated'] = True
+            st.session_state['user'] = validated_user
+            st.session_state['session_token'] = token_param
+        else:
+            st.session_state['authenticated'] = False
+            st.session_state['user'] = None
+            if "session" in st.query_params:
+                del st.query_params["session"]
+    else:
+        st.session_state['authenticated'] = False
+        st.session_state['user'] = None
 
 # =============================================================
 # AUTHENTICATION SCREEN (LOGIN & REGISTRATION)
 # =============================================================
 if not st.session_state['authenticated']:
-    st.title("🔐 Enterprise L&D Intelligence Portal")
-    st.caption("Project D26: Training Effectiveness Data Analysis · ABES EC | MCA 2nd Year | HCLTech")
+    col_l1, col_l2 = st.columns([4, 1.2])
+    with col_l1:
+        st.title("🔐 Enterprise L&D Intelligence Portal")
+        st.caption("Project D26: Training Effectiveness Data Analysis · ABES EC | MCA 2nd Year | HCLTech")
+    with col_l2:
+        theme_icon = "☀️ Light Mode" if current_theme == "dark" else "🌙 Dark Mode"
+        if st.button(f"{theme_icon}", use_container_width=True, key="login_theme_toggle"):
+            new_theme = "light" if current_theme == "dark" else "dark"
+            st.session_state['app_theme'] = new_theme
+            st.query_params["theme"] = new_theme
+            st.rerun()
 
     st.markdown("""
     <div class="callout-box">
@@ -298,6 +409,9 @@ if not st.session_state['authenticated']:
                     if auth_result["success"]:
                         st.session_state['authenticated'] = True
                         st.session_state['user'] = auth_result["user"]
+                        st.session_state['session_token'] = auth_result.get("session_token")
+                        if auth_result.get("session_token"):
+                            st.query_params["session"] = auth_result["session_token"]
                         st.success(f"Welcome back, {auth_result['user']['full_name']}!")
                         st.rerun()
                     else:
@@ -384,40 +498,68 @@ user_dept = current_user['department']
 # Role Badge Class
 badge_class = "badge-admin" if "CHRO" in user_role else ("badge-manager" if "Manager" in user_role else ("badge-lead" if "Lead" in user_role else "badge-lnd"))
 
-# Top Branding & User Bar (Full Width Header)
-col_top1, col_top2 = st.columns([4, 1])
+# Top Branding & User Bar (Full Width Header with Theme Switcher & Sign Out)
+col_top1, col_top2, col_top3 = st.columns([3.4, 1.1, 0.9])
 with col_top1:
     st.markdown(f"""
     <div style="display:flex; align-items:center; gap:12px; margin-bottom:4px;">
         <h2 style="margin:0;">🎯 Enterprise Training Effectiveness Portal</h2>
         <span class="badge-pill {badge_class}">{user_role.upper()}</span>
     </div>
-    <span style="color:var(--text-color, #94a3b8); opacity:0.8; font-size:0.86rem;">Signed in as <b>{current_user['full_name']}</b> ({current_user['email']}) · Scope: <b>{user_dept if user_role == 'Department Lead' else 'Global Enterprise'}</b></span>
+    <span style="font-size:0.86rem; opacity:0.85;">Signed in as <b>{current_user['full_name']}</b> ({current_user['email']}) · Scope: <b>{user_dept if user_role == 'Department Lead' else 'Global Enterprise'}</b></span>
     """, unsafe_allow_html=True)
 with col_top2:
+    theme_icon = "☀️ Light Theme" if current_theme == "dark" else "🌙 Dark Theme"
+    if st.button(f"{theme_icon}", use_container_width=True, key="app_theme_toggle_btn"):
+        new_theme = "light" if current_theme == "dark" else "dark"
+        st.session_state['app_theme'] = new_theme
+        st.query_params["theme"] = new_theme
+        st.rerun()
+with col_top3:
     if st.button("🚪 Sign Out", use_container_width=True):
+        token = st.session_state.get('session_token') or st.query_params.get("session")
+        if token:
+            destroy_session(token)
         st.session_state['authenticated'] = False
         st.session_state['user'] = None
+        st.session_state['session_token'] = None
+        if "session" in st.query_params:
+            del st.query_params["session"]
+        if "tab" in st.query_params:
+            del st.query_params["tab"]
         for k in ['filter_dept', 'filter_tier', 'filter_gender', 'filter_city', 'filter_min_rating', 'filter_exp_range', 'filter_flight_risk_only']:
             if k in st.session_state:
                 del st.session_state[k]
         st.rerun()
 
 # -------------------------------------------------------------
-# TOP MODULAR NAVBAR (OPTION A)
+# TOP MODULAR NAVBAR (OPTION A WITH RELOAD PERSISTENCE)
 # -------------------------------------------------------------
 st.markdown("### 🧭 Portal Navigation")
+nav_modules = [
+    "📊 Executive Overview",
+    "🏢 Workforce Analytics",
+    "🧮 Planning & Risk Engine",
+    "⚙️ Operations & Governance"
+]
+# Determine active tab from URL query params so reload stays on current page
+current_tab_param = st.query_params.get("tab")
+default_tab_idx = 0
+if current_tab_param in nav_modules:
+    default_tab_idx = nav_modules.index(current_tab_param)
+
 selected_module = st.radio(
     "Navigation Module",
-    [
-        "📊 Executive Overview",
-        "🏢 Workforce Analytics",
-        "🧮 Planning & Risk Engine",
-        "⚙️ Operations & Governance"
-    ],
+    nav_modules,
+    index=default_tab_idx,
     horizontal=True,
-    label_visibility="collapsed"
+    label_visibility="collapsed",
+    key="nav_module_selection"
 )
+
+# Synchronize active tab in query params for reload persistence
+if st.query_params.get("tab") != selected_module:
+    st.query_params["tab"] = selected_module
 st.markdown("---")
 
 # -------------------------------------------------------------

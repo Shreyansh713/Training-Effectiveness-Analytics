@@ -128,6 +128,14 @@ def init_database():
         FOREIGN KEY (employee_id) REFERENCES employees(employee_id)
     );
 
+    CREATE TABLE IF NOT EXISTS active_sessions (
+        session_token TEXT PRIMARY KEY,
+        username TEXT NOT NULL,
+        created_at TEXT NOT NULL,
+        expires_at TEXT NOT NULL,
+        FOREIGN KEY (username) REFERENCES users(username)
+    );
+
     CREATE INDEX IF NOT EXISTS idx_emp_dept ON employees(department);
     CREATE INDEX IF NOT EXISTS idx_rec_emp ON training_records(employee_id);
     """)
@@ -232,11 +240,21 @@ def authenticate_user(username: str, password_attempt: str) -> dict:
         INSERT INTO audit_log (timestamp, username, role, action, detail)
         VALUES (?, ?, ?, ?, ?)
         """, (now_str, username, user['role'], "LOGIN_SUCCESS", "User authenticated into portal"))
+
+        # Generate persistent session token (valid for 7 days across reloads)
+        session_token = secrets.token_hex(24)
+        expires_str = (now + timedelta(days=7)).strftime("%Y-%m-%d %H:%M:%S")
+        cur.execute("""
+        INSERT INTO active_sessions (session_token, username, created_at, expires_at)
+        VALUES (?, ?, ?, ?)
+        """, (session_token, username, now_str, expires_str))
+
         conn.commit()
         conn.close()
 
         return {
             "success": True,
+            "session_token": session_token,
             "user": {
                 "username": user["username"],
                 "full_name": user["full_name"],
@@ -306,6 +324,41 @@ def register_user(username, full_name, email, password, auth_key, department="Al
     conn.close()
 
     return {"success": True, "message": f"Account created successfully for {full_name} ({role})! Please proceed to login."}
+
+def validate_session(session_token: str) -> dict:
+    """Validates persistent session token across browser refreshes and returns user payload."""
+    if not session_token:
+        return None
+    try:
+        conn = get_connection()
+        cur = conn.cursor()
+        now_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        cur.execute("""
+        SELECT u.username, u.full_name, u.email, u.role, u.department
+        FROM active_sessions s
+        JOIN users u ON s.username = u.username
+        WHERE s.session_token = ? AND s.expires_at > ?
+        """, (session_token, now_str))
+        row = cur.fetchone()
+        conn.close()
+        if row:
+            return dict(row)
+    except Exception:
+        pass
+    return None
+
+def destroy_session(session_token: str):
+    """Destroys active session token on user sign out."""
+    if not session_token:
+        return
+    try:
+        conn = get_connection()
+        cur = conn.cursor()
+        cur.execute("DELETE FROM active_sessions WHERE session_token = ?", (session_token,))
+        conn.commit()
+        conn.close()
+    except Exception:
+        pass
 
 # -------------------------------------------------------------
 # DYNAMIC DATA QUERIES & LIVE CRUD WORKFLOWS
