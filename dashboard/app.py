@@ -526,38 +526,22 @@ st.markdown("""
         font-weight: 600;
     }
     
-    /* Primary Split-Screen Submit Button (Electric Royal Blue with Arrow) */
+    /* Form Submit Button */
     div[data-testid="stFormSubmitButton"] > button {
         background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) !important;
         color: #ffffff !important;
         border: none !important;
         border-radius: 12px !important;
-        padding: 12px 24px !important;
-        font-size: 1.05rem !important;
+        padding: 10px 20px !important;
+        font-size: 1rem !important;
         font-weight: 700 !important;
         box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35) !important;
         transition: transform 0.15s ease, box-shadow 0.15s ease !important;
-        margin-top: 10px !important;
     }
     div[data-testid="stFormSubmitButton"] > button:hover {
         background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%) !important;
         transform: translateY(-2px) !important;
         box-shadow: 0 8px 20px rgba(37, 99, 235, 0.45) !important;
-    }
-    
-    /* Hero Feature Cards */
-    .hero-feature-card {
-        background: rgba(255, 255, 255, 0.07);
-        border: 1px solid rgba(255, 255, 255, 0.15);
-        border-radius: 14px;
-        padding: 14px 10px;
-        text-align: center;
-        backdrop-filter: blur(8px);
-        transition: transform 0.2s ease;
-    }
-    .hero-feature-card:hover {
-        transform: translateY(-3px);
-        border-color: #38bdf8;
     }
 
     /* Printable Memo Card */
@@ -591,15 +575,14 @@ if 'authenticated' not in st.session_state or not st.session_state['authenticate
         st.session_state['user'] = None
 
 # =============================================================
-# AUTHENTICATION SCREEN: SPLIT-SCREEN SAAS HERO (LOGIN & REGISTER)
+# AUTHENTICATION SCREEN (LOGIN & REGISTRATION)
 # =============================================================
 if not st.session_state['authenticated']:
-    if 'auth_mode' not in st.session_state:
-        st.session_state['auth_mode'] = 'login'
-
-    # Top Utility Bar (Theme Toggle)
-    col_u1, col_u2 = st.columns([5, 1])
-    with col_u2:
+    col_l1, col_l2 = st.columns([4, 1.2])
+    with col_l1:
+        st.title("🔐 Enterprise L&D Intelligence Portal")
+        st.caption("Project D26: Training Effectiveness Data Analysis · ABES EC | MCA 2nd Year | HCLTech")
+    with col_l2:
         theme_icon = "☀️ Light Mode" if current_theme == "dark" else "🌙 Dark Mode"
         if st.button(f"{theme_icon}", use_container_width=True, key="login_theme_toggle"):
             new_theme = "light" if current_theme == "dark" else "dark"
@@ -607,203 +590,106 @@ if not st.session_state['authenticated']:
             st.query_params["theme"] = new_theme
             st.rerun()
 
-    # Split-Screen Layout: Left Hero Branding (52%) + Right Form Card (48%)
-    col_hero, col_form = st.columns([1.15, 1.0], gap="large")
-
-    # --- LEFT HERO BRANDING PANE ---
-    with col_hero:
-        st.markdown(textwrap.dedent("""
-<div style="background: radial-gradient(circle at 20% 20%, #1e40af 0%, #172554 55%, #09122c 100%); border-radius: 24px; padding: 48px 42px; border: 1px solid rgba(59, 130, 246, 0.35); box-shadow: 0 20px 45px -12px rgba(15, 23, 42, 0.45); min-height: 590px; display: flex; flex-direction: column; justify-content: space-between;">
-    <div>
-        <!-- Brand Logo & Title -->
-        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 24px;">
-            <div style="background: linear-gradient(135deg, #38bdf8 0%, #2563eb 100%); width: 42px; height: 42px; border-radius: 12px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);">
-                <span style="font-size: 22px;">🎓</span>
-            </div>
-            <span style="font-size: 1.6rem; font-weight: 800; color: #ffffff; letter-spacing: -0.02em;">TalentMetrics</span>
-        </div>
-
-        <!-- Workspace Category Sub-tag -->
-        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 24px;">
-            <span style="width: 7px; height: 7px; border-radius: 50%; background-color: #38bdf8; display: inline-block;"></span>
-            <span style="font-size: 0.74rem; font-weight: 700; color: #93c5fd; letter-spacing: 0.14em; text-transform: uppercase;">ENTERPRISE L&D INTELLIGENCE</span>
-        </div>
-
-        <!-- Massive Bold Headline (Reference Style) -->
-        <h1 style="font-size: 3.3rem; font-weight: 800; line-height: 1.12; color: #ffffff; margin: 0 0 18px 0; letter-spacing: -0.035em;">
-            Every employee.<br>Every milestone.
-        </h1>
-
-        <!-- Subtitle Description -->
-        <p style="font-size: 1.05rem; line-height: 1.65; color: #cbd5e1; margin-bottom: 36px; max-width: 440px;">
-            Measure training efficacy, track performance rating uplifts, and safeguard high-value talent across all departments with verified data intelligence.
-        </p>
+    st.markdown("""
+    <div class="callout-box">
+    <b>Secure Staff Access Required:</b> Please sign in with your corporate credentials or register with a departmental authorization key.
+    All sessions and administrative modifications are audited in SQLite.
     </div>
+    """, unsafe_allow_html=True)
 
-    <!-- Bottom Floating 3D Feature Cards -->
-    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 40px; padding-top: 24px; border-top: 1px solid rgba(255, 255, 255, 0.12);">
-        <div class="hero-feature-card">
-            <span style="font-size: 1.45rem;">📊</span><br>
-            <span style="font-size: 0.72rem; font-weight: 600; color: #e2e8f0; margin-top: 4px; display: inline-block;">ROI Model</span>
-        </div>
-        <div style="background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); border: 1px solid #60a5fa; border-radius: 14px; padding: 14px 10px; text-align: center; box-shadow: 0 8px 16px -4px rgba(37, 99, 235, 0.5);">
-            <span style="font-size: 1.45rem;">🎓</span><br>
-            <span style="font-size: 0.72rem; font-weight: 700; color: #ffffff; margin-top: 4px; display: inline-block;">5,000 Staff</span>
-        </div>
-        <div class="hero-feature-card">
-            <span style="font-size: 1.45rem;">🚨</span><br>
-            <span style="font-size: 0.72rem; font-weight: 600; color: #e2e8f0; margin-top: 4px; display: inline-block;">Flight Risk</span>
-        </div>
-        <div class="hero-feature-card">
-            <span style="font-size: 1.45rem;">📈</span><br>
-            <span style="font-size: 0.72rem; font-weight: 600; color: #e2e8f0; margin-top: 4px; display: inline-block;">Uplift +0.53</span>
-        </div>
-    </div>
-</div>
-        """).strip(), unsafe_allow_html=True)
+    auth_tab1, auth_tab2, auth_tab3 = st.tabs(["🔑 Sign In", "📝 Register New Staff", "💡 Demo Credentials"])
 
-    # --- RIGHT AUTH FORM PANE ---
-    with col_form:
-        if st.session_state['auth_mode'] == 'login':
-            # WELCOME BACK (LOGIN)
-            st.markdown(textwrap.dedent("""
-<div style="margin-bottom: 20px;">
-    <h1 style="font-size: 2.4rem; font-weight: 800; margin-bottom: 4px; letter-spacing: -0.025em;">Welcome back</h1>
-    <p style="font-size: 0.96rem; opacity: 0.75; margin-bottom: 0;">Sign in to your TalentMetrics enterprise portal.</p>
-</div>
-            """).strip(), unsafe_allow_html=True)
+    # --- TAB 1: SIGN IN ---
+    with auth_tab1:
+        with st.form("login_form"):
+            login_user = st.text_input("Username", placeholder="e.g. chro_admin or hr_manager")
+            login_pwd = st.text_input("Password", type="password", placeholder="Enter your password")
+            submit_login = st.form_submit_button("Sign In to Portal", use_container_width=True)
 
-            with st.form("login_form"):
-                st.markdown("**Username**")
-                login_user = st.text_input("Username", placeholder="Enter your username", label_visibility="collapsed")
-                st.markdown("**Password**")
-                login_pwd = st.text_input("Password", type="password", placeholder="Enter your password", label_visibility="collapsed")
-                submit_login = st.form_submit_button("Sign in  →", use_container_width=True)
-
-                if submit_login:
-                    if not login_user or not login_pwd:
-                        st.error("Please enter both username and password.")
+            if submit_login:
+                if not login_user or not login_pwd:
+                    st.error("Please enter both username and password.")
+                else:
+                    auth_result = authenticate_user(login_user.strip(), login_pwd)
+                    if auth_result["success"]:
+                        st.session_state['authenticated'] = True
+                        st.session_state['user'] = auth_result["user"]
+                        st.session_state['session_token'] = auth_result.get("session_token")
+                        if auth_result.get("session_token"):
+                            st.query_params["session"] = auth_result["session_token"]
+                        st.success(f"Welcome back, {auth_result['user']['full_name']}!")
+                        st.rerun()
                     else:
-                        auth_result = authenticate_user(login_user.strip(), login_pwd)
-                        if auth_result["success"]:
-                            st.session_state['authenticated'] = True
-                            st.session_state['user'] = auth_result["user"]
-                            st.session_state['session_token'] = auth_result.get("session_token")
-                            if auth_result.get("session_token"):
-                                st.query_params["session"] = auth_result["session_token"]
-                            st.success(f"Welcome back, {auth_result['user']['full_name']}!")
-                            st.rerun()
-                        else:
-                            st.error(auth_result["message"])
+                        st.error(auth_result["message"])
 
-            # Switcher to Register
-            col_sw1, col_sw2 = st.columns([1.5, 1])
-            with col_sw1:
-                st.markdown("<p style='font-size:0.9rem; margin-top:8px;'>New to the portal?</p>", unsafe_allow_html=True)
-            with col_sw2:
-                if st.button("Create an account", key="btn_switch_to_register", use_container_width=True):
-                    st.session_state['auth_mode'] = 'register'
-                    st.rerun()
+    # --- TAB 2: REGISTER ---
+    with auth_tab2:
+        with st.form("register_form"):
+            reg_user = st.text_input("Choose Username", placeholder="e.g. rahul_analyst")
+            reg_name = st.text_input("Full Name", placeholder="e.g. Rahul Sharma")
+            reg_email = st.text_input("Corporate Email", placeholder="e.g. rahul.sharma@enterprise.in")
+            reg_dept = st.selectbox("Department", ["Human Resources", "Engineering", "Data Science & AI", "Sales & Marketing", "Finance", "Operations", "Customer Success"])
+            reg_key = st.text_input("Department Authorization Key", placeholder="Enter valid authorization key from HR Head")
+            reg_pwd = st.text_input("Password (min 8 chars, 1 uppercase, 1 number)", type="password")
+            submit_reg = st.form_submit_button("Create Staff Account", use_container_width=True)
 
-            st.markdown("---")
-            # Quick Demo Login Pills for Evaluators & Reviewers
-            st.markdown("<p style='font-size:0.8rem; font-weight:700; text-transform:uppercase; opacity:0.7; margin-bottom:8px;'>⚡ One-Click Demo Access</p>", unsafe_allow_html=True)
-            dq1, dq2 = st.columns(2)
-            with dq1:
-                if st.button("👑 CHRO (Admin)", key="quick_chro", use_container_width=True):
-                    res = authenticate_user("chro_admin", "Admin@2026")
-                    if res["success"]:
-                        st.session_state['authenticated'] = True
-                        st.session_state['user'] = res["user"]
-                        st.session_state['session_token'] = res["session_token"]
-                        st.query_params["session"] = res["session_token"]
-                        st.rerun()
-                if st.button("🎓 L&D Specialist", key="quick_lnd", use_container_width=True):
-                    res = authenticate_user("lnd_lead", "Lnd@2026")
-                    if res["success"]:
-                        st.session_state['authenticated'] = True
-                        st.session_state['user'] = res["user"]
-                        st.session_state['session_token'] = res["session_token"]
-                        st.query_params["session"] = res["session_token"]
-                        st.rerun()
-            with dq2:
-                if st.button("💼 HR Manager", key="quick_hrm", use_container_width=True):
-                    res = authenticate_user("hr_manager", "HrManager@2026")
-                    if res["success"]:
-                        st.session_state['authenticated'] = True
-                        st.session_state['user'] = res["user"]
-                        st.session_state['session_token'] = res["session_token"]
-                        st.query_params["session"] = res["session_token"]
-                        st.rerun()
-                if st.button("💻 Eng Lead", key="quick_eng", use_container_width=True):
-                    res = authenticate_user("eng_lead", "EngLead@2026")
-                    if res["success"]:
-                        st.session_state['authenticated'] = True
-                        st.session_state['user'] = res["user"]
-                        st.session_state['session_token'] = res["session_token"]
-                        st.query_params["session"] = res["session_token"]
-                        st.rerun()
-
-        else:
-            # CREATE AN ACCOUNT (REGISTER)
-            st.markdown(textwrap.dedent("""
-<div style="margin-bottom: 20px;">
-    <h1 style="font-size: 2.4rem; font-weight: 800; margin-bottom: 4px; letter-spacing: -0.025em;">Create an account</h1>
-    <p style="font-size: 0.96rem; opacity: 0.75; margin-bottom: 0;">Register for departmental access and talent analytics.</p>
-</div>
-            """).strip(), unsafe_allow_html=True)
-
-            with st.form("register_form"):
-                st.markdown("**Username**")
-                reg_user = st.text_input("Username", placeholder="Enter your username", label_visibility="collapsed")
-                
-                st.markdown("**Full Name**")
-                reg_name = st.text_input("Full Name", placeholder="e.g. Rahul Sharma", label_visibility="collapsed")
-
-                st.markdown("**Corporate Email**")
-                reg_email = st.text_input("Email", placeholder="e.g. rahul.sharma@enterprise.in", label_visibility="collapsed")
-
-                st.markdown("**Department**")
-                reg_dept = st.selectbox("Department", ["Human Resources", "Engineering", "Data Science & AI", "Sales & Marketing", "Finance", "Operations", "Customer Success"], label_visibility="collapsed")
-
-                st.markdown("**Department Authorization Key**")
-                reg_key = st.text_input("Authorization Key", placeholder="Enter department key (e.g. CHRO-EXEC-2026)", label_visibility="collapsed")
-
-                st.markdown("**Password**")
-                reg_pwd = st.text_input("Password", type="password", placeholder="Use at least 8 characters", label_visibility="collapsed")
-
-                submit_reg = st.form_submit_button("Create account  →", use_container_width=True)
-
-                if submit_reg:
-                    if not reg_user or not reg_name or not reg_email or not reg_pwd or not reg_key:
-                        st.error("All fields including authorization key are required.")
+            if submit_reg:
+                if not reg_user or not reg_name or not reg_email or not reg_pwd or not reg_key:
+                    st.error("All fields including authorization key are required.")
+                else:
+                    reg_result = register_user(
+                        reg_user.strip(), reg_name.strip(), reg_email.strip(),
+                        reg_pwd, reg_key.strip(), reg_dept
+                    )
+                    if reg_result["success"]:
+                        st.success(reg_result["message"])
                     else:
-                        reg_result = register_user(
-                            reg_user.strip(), reg_name.strip(), reg_email.strip(),
-                            reg_pwd, reg_key.strip(), reg_dept
-                        )
-                        if reg_result["success"]:
-                            st.success(reg_result["message"])
-                            st.info("Registration successful! You can now switch to Sign In.")
-                        else:
-                            st.error(reg_result["message"])
+                        st.error(reg_result["message"])
 
-            # Switcher to Login
-            col_sw1, col_sw2 = st.columns([1.5, 1])
-            with col_sw1:
-                st.markdown("<p style='font-size:0.9rem; margin-top:8px;'>Already registered?</p>", unsafe_allow_html=True)
-            with col_sw2:
-                if st.button("Sign in", key="btn_switch_to_login", use_container_width=True):
-                    st.session_state['auth_mode'] = 'login'
-                    st.rerun()
+    # --- TAB 3: DEMO CREDENTIALS ---
+    with auth_tab3:
+        st.markdown("### Pre-Configured Demo Credentials")
+        st.markdown("Use any of the following accounts to test different roles and data permissions:")
+        
+        col_c1, col_c2 = st.columns(2)
+        with col_c1:
+            st.info("""
+            **👑 CHRO (Executive Admin)**  
+            - **Username:** `chro_admin`  
+            - **Password:** `Admin@2026`  
+            - **Scope:** Global Enterprise (All Departments)  
+            - **Permissions:** Full Analytics, Simulator, Retention Approvals, Audit Log
+            """)
+            st.success("""
+            **💼 HR Manager**  
+            - **Username:** `hr_manager`  
+            - **Password:** `HrManager@2026`  
+            - **Scope:** Global Enterprise  
+            - **Permissions:** Employee Onboarding, Talent Flight Interventions, Exports
+            """)
+        with col_c2:
+            st.warning("""
+            **🎓 L&D Specialist**  
+            - **Username:** `lnd_lead`  
+            - **Password:** `Lnd@2026`  
+            - **Scope:** Learning Programs  
+            - **Permissions:** Log Training Hours, Update Test Scores, Program ROI
+            """)
+            st.info("""
+            **💻 Department Lead (Engineering)**  
+            - **Username:** `eng_lead`  
+            - **Password:** `EngLead@2026`  
+            - **Scope:** Scoped to Engineering Department  
+            - **Permissions:** Engineering Performance & Attendance Analytics
+            """)
 
-            with st.expander("🔑 View Department Authorization Keys", expanded=False):
-                st.markdown("""
-                - **CHRO (Admin):** `CHRO-EXEC-2026`
-                - **HR Manager:** `HR-TEAM-2026`
-                - **L&D Specialist:** `LND-PORTAL-2026`
-                - **Department Lead:** `DEPT-LEAD-2026`
-                """)
+        st.markdown("#### Department Authorization Keys for Self-Registration")
+        st.code("""
+        CHRO (Admin):     CHRO-EXEC-2026
+        HR Manager:       HR-TEAM-2026
+        L&D Specialist:   LND-PORTAL-2026
+        Department Lead:  DEPT-LEAD-2026
+        """, language="text")
 
     st.stop()
 
