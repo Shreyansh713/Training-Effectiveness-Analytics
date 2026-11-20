@@ -295,12 +295,17 @@ with st.sidebar:
     all_cities = sorted(df_full['city'].unique().tolist())
     selected_cities = st.multiselect("Location (City)", all_cities, default=all_cities)
 
-    # Apply Filters
+    # Apply Filters (If user clears a multiselect, default to all options for that dimension)
+    use_depts = selected_depts if selected_depts else all_depts
+    use_tiers = selected_tiers if selected_tiers else all_tiers
+    use_genders = selected_genders if selected_genders else all_genders
+    use_cities = selected_cities if selected_cities else all_cities
+
     df = df_full[
-        (df_full['department'].isin(selected_depts)) &
-        (df_full['training_tier'].isin(selected_tiers)) &
-        (df_full['gender'].isin(selected_genders)) &
-        (df_full['city'].isin(selected_cities))
+        (df_full['department'].isin(use_depts)) &
+        (df_full['training_tier'].isin(use_tiers)) &
+        (df_full['gender'].isin(use_genders)) &
+        (df_full['city'].isin(use_cities))
     ]
 
     st.markdown("---")
@@ -357,11 +362,12 @@ with col4:
     """, unsafe_allow_html=True)
 
 with col5:
+    avg_cost_val = df['hr_cost'].mean() if total_emps > 0 else 0
     st.markdown(f"""
     <div class="metric-card">
         <div class="metric-label">Total L&D Spend</div>
         <div class="metric-value">₹ {total_spend/1e7:.2f} Cr</div>
-        <div class="metric-delta-neutral">● ₹ {df['hr_cost'].mean():,.0f} / emp</div>
+        <div class="metric-delta-neutral">● ₹ {avg_cost_val:,.0f} / emp</div>
     </div>
     """, unsafe_allow_html=True)
 
@@ -758,48 +764,59 @@ with tabs[6]:
 
     # --- SUBTAB 1: EMPLOYEE SCORECARD ---
     with e360_tab1:
-        col_search1, col_search2 = st.columns([2, 3])
-        with col_search1:
-            emp_search = st.selectbox("Select Employee to Inspect", df['employee_id'] + " - " + df['employee_name'])
-            selected_emp_id = emp_search.split(" - ")[0]
-            emp_data = df[df['employee_id'] == selected_emp_id].iloc[0]
+        # Use filtered options, or fallback to full options if filter produced no rows
+        emp_options = (df['employee_id'] + " - " + df['employee_name']).tolist() if len(df) > 0 else (df_full['employee_id'] + " - " + df_full['employee_name']).tolist()
 
-        with col_search2:
-            is_risk = emp_data['is_flight_risk']
-            badge_html = "<span style='background:#ef4444;color:white;padding:4px 8px;border-radius:4px;'>🚨 HIGH FLIGHT RISK (POACHING)</span>" if is_risk else "<span style='background:#10b981;color:white;padding:4px 8px;border-radius:4px;'>✅ LOW RETENTION RISK</span>"
-            st.markdown(f"### {emp_data['employee_name']} ({emp_data['employee_id']}) {badge_html}", unsafe_allow_html=True)
-            st.caption(f"{emp_data['job_role']} | {emp_data['department']} | {emp_data['city']}, {emp_data['state']}")
+        if not emp_options:
+            st.warning("No employees available to inspect. Please check your data.")
+        else:
+            col_search1, col_search2 = st.columns([2, 3])
+            with col_search1:
+                emp_search = st.selectbox("Select Employee to Inspect", emp_options)
 
-        col_e1, col_e2, col_e3, col_e4 = st.columns(4)
-        col_e1.metric("Pre-Training Rating", f"{emp_data['pre_training_rating']:.1f}")
-        col_e2.metric("Post-Training Rating", f"{emp_data['performance_rating']:.1f}", f"+{emp_data['rating_improvement']:.2f}")
-        col_e3.metric("Training Assessment Score", f"{emp_data['training_score']:.1f}%")
-        col_e4.metric("Logged Training Hours", f"{emp_data['training_hours']:.1f} hrs")
+            if emp_search and " - " in emp_search:
+                selected_emp_id = emp_search.split(" - ")[0]
+                emp_matches = df_full[df_full['employee_id'] == selected_emp_id]
+                if len(emp_matches) > 0:
+                    emp_data = emp_matches.iloc[0]
 
-        col_prof1, col_prof2 = st.columns(2)
-        with col_prof1:
-            st.markdown("#### Profile & Remuneration Details")
-            st.write(f"**Experience:** {emp_data['experience_years']} Years")
-            st.write(f"**Annual Remuneration:** ₹ {emp_data['salary']:,}")
-            st.write(f"**Direct Supervisor:** `{emp_data['manager_id']}`")
-            st.write(f"**Join Date:** {emp_data['join_date'].strftime('%Y-%m-%d')}")
-            st.write(f"**Status:** {'Resigned / Attrited (' + emp_data['exit_date'].strftime('%Y-%m-%d') + ')' if emp_data['attrition_flag'] == 'Yes' else 'Active'}")
+                    with col_search2:
+                        is_risk = emp_data['is_flight_risk']
+                        badge_html = "<span style='background:#ef4444;color:white;padding:4px 8px;border-radius:4px;'>🚨 HIGH FLIGHT RISK (POACHING)</span>" if is_risk else "<span style='background:#10b981;color:white;padding:4px 8px;border-radius:4px;'>✅ LOW RETENTION RISK</span>"
+                        st.markdown(f"### {emp_data['employee_name']} ({emp_data['employee_id']}) {badge_html}", unsafe_allow_html=True)
+                        st.caption(f"{emp_data['job_role']} | {emp_data['department']} | {emp_data['city']}, {emp_data['state']}")
 
-        with col_prof2:
-            st.markdown("#### Learning & Discipline Record")
-            st.write(f"**Enrolled Program:** {emp_data['training_program_name']} ({emp_data['training_type']})")
-            st.write(f"**HR Investment Cost:** ₹ {emp_data['hr_cost']:,}")
-            st.write(f"**Annual Attendance Days:** {emp_data['attendance_days']} Days")
-            st.write(f"**Annual Late Arrivals:** {emp_data['late_arrivals']} Times")
+                    col_e1, col_e2, col_e3, col_e4 = st.columns(4)
+                    col_e1.metric("Pre-Training Rating", f"{emp_data['pre_training_rating']:.1f}")
+                    col_e2.metric("Post-Training Rating", f"{emp_data['performance_rating']:.1f}", f"+{emp_data['rating_improvement']:.2f}")
+                    col_e3.metric("Training Assessment Score", f"{emp_data['training_score']:.1f}%")
+                    col_e4.metric("Logged Training Hours", f"{emp_data['training_hours']:.1f} hrs")
+
+                    col_prof1, col_prof2 = st.columns(2)
+                    with col_prof1:
+                        st.markdown("#### Profile & Remuneration Details")
+                        st.write(f"**Experience:** {emp_data['experience_years']} Years")
+                        st.write(f"**Annual Remuneration:** ₹ {emp_data['salary']:,}")
+                        st.write(f"**Direct Supervisor:** `{emp_data['manager_id']}`")
+                        st.write(f"**Join Date:** {emp_data['join_date'].strftime('%Y-%m-%d')}")
+                        st.write(f"**Status:** {'Resigned / Attrited (' + emp_data['exit_date'].strftime('%Y-%m-%d') + ')' if emp_data['attrition_flag'] == 'Yes' else 'Active'}")
+
+                    with col_prof2:
+                        st.markdown("#### Learning & Discipline Record")
+                        st.write(f"**Enrolled Program:** {emp_data['training_program_name']} ({emp_data['training_type']})")
+                        st.write(f"**HR Investment Cost:** ₹ {emp_data['hr_cost']:,}")
+                        st.write(f"**Annual Attendance Days:** {emp_data['attendance_days']} Days")
+                        st.write(f"**Annual Late Arrivals:** {emp_data['late_arrivals']} Times")
 
     # --- SUBTAB 2: LOG TRAINING COMPLETION (L&D) ---
     with e360_tab2:
         st.markdown("#### Log Training Hours & Assessment Score")
         st.caption("Available to L&D Specialists and Managers. Updates performance ratings, attendance, and recalculates flight risk in the live database.")
         
+        all_emp_options = (df_full['employee_id'] + " - " + df_full['employee_name']).tolist()
         with st.form("log_training_form"):
-            t_emp_id = st.selectbox("Select Employee", df['employee_id'] + " - " + df['employee_name'], key="t_emp_select")
-            actual_emp_id = t_emp_id.split(" - ")[0]
+            t_emp_id = st.selectbox("Select Employee", all_emp_options, key="t_emp_select")
+            actual_emp_id = t_emp_id.split(" - ")[0] if t_emp_id and " - " in t_emp_id else ""
             
             t_prog = st.selectbox("Training Program", [
                 "Generative AI & LLM Applications",
@@ -817,12 +834,15 @@ with tabs[6]:
             submit_training = st.form_submit_button("Submit Training Completion Record", use_container_width=True)
 
             if submit_training:
-                t_res = log_training_completion(actual_emp_id, t_prog, t_hours, t_score, current_user)
-                if t_res["success"]:
-                    st.success(t_res["message"])
-                    st.rerun()
+                if not actual_emp_id:
+                    st.error("Please select a valid employee.")
                 else:
-                    st.error(t_res["message"])
+                    t_res = log_training_completion(actual_emp_id, t_prog, t_hours, t_score, current_user)
+                    if t_res["success"]:
+                        st.success(t_res["message"])
+                        st.rerun()
+                    else:
+                        st.error(t_res["message"])
 
     # --- SUBTAB 3: RETENTION INTERVENTION (HR / CHRO) ---
     with e360_tab3:
@@ -834,8 +854,9 @@ with tabs[6]:
         
         with st.form("retention_form"):
             if len(flight_risk_df) > 0:
-                ret_emp = st.selectbox("Select Flagged Employee", flight_risk_df['employee_id'] + " - " + flight_risk_df['employee_name'] + f" (Current: ₹ " + flight_risk_df['salary'].astype(str) + ")")
-                target_emp_id = ret_emp.split(" - ")[0]
+                ret_options = (flight_risk_df['employee_id'] + " - " + flight_risk_df['employee_name'] + " (₹ " + flight_risk_df['salary'].astype(str) + ")").tolist()
+                ret_emp = st.selectbox("Select Flagged Employee", ret_options)
+                target_emp_id = ret_emp.split(" - ")[0] if ret_emp and " - " in ret_emp else ""
             else:
                 target_emp_id = st.text_input("Employee ID", placeholder="EMP-XXXX")
 
