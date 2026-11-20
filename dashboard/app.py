@@ -13,6 +13,13 @@ import plotly.graph_objects as go
 from scipy import stats
 import streamlit as st
 
+# Safe import for statsmodels (for Plotly trendlines)
+try:
+    import statsmodels.api as sm
+    HAS_STATSMODELS = True
+except ImportError:
+    HAS_STATSMODELS = False
+
 # Set Streamlit Page Configuration
 st.set_page_config(
     page_title="Training Effectiveness Analytics | D26",
@@ -407,7 +414,7 @@ with tabs[2]:
         fig_score_uplift = px.scatter(
             df.sample(min(len(df), 800), random_state=42),
             x='training_score', y='rating_improvement', color='training_type',
-            trendline='ols', opacity=0.7,
+            trendline='ols' if HAS_STATSMODELS else None, opacity=0.7,
             title='Assessment Mastery Score vs Realized Rating Uplift',
             labels={'training_score': 'Training Assessment Score (%)', 'rating_improvement': 'Rating Improvement'},
             template='plotly_dark'
@@ -470,7 +477,8 @@ with tabs[3]:
     # Correlation Scatter with Trendline
     fig_corr_late = px.scatter(
         df.sample(min(len(df), 600), random_state=42),
-        x='training_hours', y='late_arrivals', trendline='ols', opacity=0.6,
+        x='training_hours', y='late_arrivals',
+        trendline='ols' if HAS_STATSMODELS else None, opacity=0.6,
         color='training_tier',
         title='Training Hours vs Late Clock-ins (Pearson r = -0.41, p < 0.0001)',
         labels={'training_hours': 'Logged Training Hours', 'late_arrivals': 'Late Arrivals Count'},
