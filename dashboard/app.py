@@ -260,6 +260,9 @@ with col_top2:
     if st.button("🚪 Sign Out", use_container_width=True):
         st.session_state['authenticated'] = False
         st.session_state['user'] = None
+        for k in ['filter_dept', 'filter_tier', 'filter_gender', 'filter_city']:
+            if k in st.session_state:
+                del st.session_state[k]
         st.rerun()
 
 # -------------------------------------------------------------
@@ -277,23 +280,40 @@ with st.sidebar:
     if user_role == "Department Lead":
         df_full = get_live_analytics_data(scoped_department=user_dept)
         st.info(f"🔒 Data scoped strictly to **{user_dept}** based on your security role.")
-        selected_depts = [user_dept]
+        all_depts = [user_dept]
     else:
         df_full = get_live_analytics_data(scoped_department="All")
         all_depts = sorted(df_full['department'].unique().tolist())
-        selected_depts = st.multiselect("Department", all_depts, default=all_depts)
 
-    # Training Tier Filter
     all_tiers = sorted(df_full['training_tier'].unique().tolist())
-    selected_tiers = st.multiselect("Training Tier", all_tiers, default=all_tiers)
-
-    # Gender Filter
     all_genders = sorted(df_full['gender'].unique().tolist())
-    selected_genders = st.multiselect("Gender", all_genders, default=all_genders)
-
-    # City Filter
     all_cities = sorted(df_full['city'].unique().tolist())
-    selected_cities = st.multiselect("Location (City)", all_cities, default=all_cities)
+
+    # Initialize session state for filters if not set or out of bounds
+    if "filter_dept" not in st.session_state:
+        st.session_state["filter_dept"] = all_depts
+    if "filter_tier" not in st.session_state:
+        st.session_state["filter_tier"] = all_tiers
+    if "filter_gender" not in st.session_state:
+        st.session_state["filter_gender"] = all_genders
+    if "filter_city" not in st.session_state:
+        st.session_state["filter_city"] = all_cities
+
+    # Callback to reset all filters to full defaults
+    def reset_all_filters():
+        st.session_state["filter_dept"] = all_depts
+        st.session_state["filter_tier"] = all_tiers
+        st.session_state["filter_gender"] = all_genders
+        st.session_state["filter_city"] = all_cities
+
+    if user_role != "Department Lead":
+        selected_depts = st.multiselect("Department", all_depts, key="filter_dept")
+    else:
+        selected_depts = [user_dept]
+
+    selected_tiers = st.multiselect("Training Tier", all_tiers, key="filter_tier")
+    selected_genders = st.multiselect("Gender", all_genders, key="filter_gender")
+    selected_cities = st.multiselect("Location (City)", all_cities, key="filter_city")
 
     # Apply Filters (If user clears a multiselect, default to all options for that dimension)
     use_depts = selected_depts if selected_depts else all_depts
@@ -310,8 +330,7 @@ with st.sidebar:
 
     st.markdown("---")
     st.markdown(f"**Filtered Cohort:** `{len(df):,}` / `{len(df_full):,}` employees")
-    if st.button("Reset Filters", use_container_width=True):
-        st.rerun()
+    st.button("🔄 Reset All Filters", on_click=reset_all_filters, use_container_width=True)
 
 # -------------------------------------------------------------
 # TOP KPI CARDS
