@@ -93,15 +93,26 @@ def apply_plot_theme(fig, height=None):
 
 # High-End Visual Appearance & Right-Pane CSS
 theme_css = """
+    /* --- LIGHT THEME STYLING --- */
     .stApp {
-        background-color: #f1f5f9 !important;
+        background-color: #f8fafc !important;
         color: #0f172a !important;
     }
+    h1, h2, h3, h4, h5, h6 {
+        color: #0f172a !important;
+    }
+    p, span, div {
+        color: #0f172a;
+    }
+    
+    /* Top Header Branding */
     .header-branding {
         background: #ffffff !important;
         border: 1px solid #cbd5e1 !important;
         box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05) !important;
     }
+    
+    /* Metric Cards */
     .metric-card {
         background: #ffffff !important;
         border: 1px solid #e2e8f0 !important;
@@ -113,13 +124,54 @@ theme_css = """
     .metric-label {
         color: #64748b !important;
     }
+    
+    /* Buttons (Header, Presets, Form Submits) */
+    .stButton > button, div.stButton > button {
+        background-color: #ffffff !important;
+        color: #0f172a !important;
+        border: 1px solid #cbd5e1 !important;
+        box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.08) !important;
+        font-weight: 600 !important;
+    }
+    .stButton > button:hover, div.stButton > button:hover {
+        background-color: #f1f5f9 !important;
+        border-color: #2563eb !important;
+        color: #2563eb !important;
+    }
+    
+    /* Top Executive Navbar Bar */
     div[data-testid="stRadio"] > div[role="radiogroup"] {
         background: #ffffff !important;
         border: 1px solid #cbd5e1 !important;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.04) !important;
     }
-    div[data-testid="stRadio"] label span {
+    div[data-testid="stRadio"] label,
+    div[data-testid="stRadio"] label p,
+    div[data-testid="stRadio"] label span,
+    div[data-testid="stRadio"] div[data-testid="stMarkdownContainer"] p {
         color: #0f172a !important;
+        font-weight: 600 !important;
     }
+    
+    /* Sub-Tabs (Departmental Capability, Matrix, etc.) */
+    button[data-testid="stTab"] {
+        background-color: transparent !important;
+        border-color: transparent !important;
+    }
+    button[data-testid="stTab"] p {
+        color: #64748b !important;
+        font-weight: 600 !important;
+        font-size: 0.92rem !important;
+    }
+    button[data-testid="stTab"][aria-selected="true"] {
+        border-bottom: 2px solid #2563eb !important;
+    }
+    button[data-testid="stTab"][aria-selected="true"] p {
+        color: #2563eb !important;
+        font-weight: 700 !important;
+    }
+
+    /* Right-Side Filter Pane Card */
     .right-filter-pane {
         background: #ffffff !important;
         border: 1px solid #cbd5e1 !important;
@@ -131,30 +183,83 @@ theme_css = """
     .filter-title-text {
         color: #0f172a !important;
     }
+    
+    /* Form inputs, Multiselect, Selectbox & Sliders */
+    label p, label span, .stWidgetLabel p {
+        color: #0f172a !important;
+        font-weight: 600 !important;
+    }
+    div[data-baseweb="select"] > div {
+        background-color: #ffffff !important;
+        color: #0f172a !important;
+        border: 1px solid #cbd5e1 !important;
+    }
+    div[data-baseweb="tag"] {
+        background-color: #e2e8f0 !important;
+        color: #0f172a !important;
+    }
+    div[data-baseweb="tag"] span {
+        color: #0f172a !important;
+        font-weight: 500 !important;
+    }
+    div[data-testid="stExpander"] {
+        background-color: #ffffff !important;
+        border: 1px solid #cbd5e1 !important;
+    }
+    div[data-testid="stExpander"] summary span,
+    div[data-testid="stExpander"] summary p {
+        color: #0f172a !important;
+        font-weight: 600 !important;
+    }
+    div[data-testid="stCheckbox"] label p {
+        color: #0f172a !important;
+    }
+    div[data-testid="stSlider"] div,
+    div[data-testid="stSlider"] p {
+        color: #0f172a !important;
+    }
+    .stMarkdown p, .stMarkdown span {
+        color: #0f172a;
+    }
+
+    /* Informational & Alert Banners */
     .callout-box {
         background: #eff6ff !important;
         border-left: 4px solid #3b82f6 !important;
         color: #1e3a8a !important;
-        border: 1px solid #dbeafe !important;
-        border-left: 4px solid #3b82f6 !important;
+        border-top: 1px solid #dbeafe !important;
+        border-right: 1px solid #dbeafe !important;
+        border-bottom: 1px solid #dbeafe !important;
     }
     .alert-box {
         background: #fef2f2 !important;
         border-left: 4px solid #ef4444 !important;
         color: #991b1b !important;
-        border: 1px solid #fee2e2 !important;
-        border-left: 4px solid #ef4444 !important;
+        border-top: 1px solid #fee2e2 !important;
+        border-right: 1px solid #fee2e2 !important;
+        border-bottom: 1px solid #fee2e2 !important;
     }
 """ if current_theme == "light" else """
+    /* --- DARK THEME STYLING --- */
     .stApp {
         background-color: #0b1120 !important;
         color: #f8fafc !important;
     }
+    h1, h2, h3, h4, h5, h6 {
+        color: #f8fafc !important;
+    }
+    p, span, div {
+        color: #f8fafc;
+    }
+    
+    /* Top Header Branding */
     .header-branding {
         background: #1e293b !important;
         border: 1px solid #334155 !important;
         box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2) !important;
     }
+    
+    /* Metric Cards */
     .metric-card {
         background: #1e293b !important;
         border: 1px solid #334155 !important;
@@ -166,13 +271,54 @@ theme_css = """
     .metric-label {
         color: #94a3b8 !important;
     }
+    
+    /* Buttons (Header, Presets, Form Submits) */
+    .stButton > button, div.stButton > button {
+        background-color: #1e293b !important;
+        color: #f8fafc !important;
+        border: 1px solid #334155 !important;
+        box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2) !important;
+        font-weight: 600 !important;
+    }
+    .stButton > button:hover, div.stButton > button:hover {
+        background-color: #334155 !important;
+        border-color: #38bdf8 !important;
+        color: #38bdf8 !important;
+    }
+    
+    /* Top Executive Navbar Bar */
     div[data-testid="stRadio"] > div[role="radiogroup"] {
         background: #1e293b !important;
         border: 1px solid #334155 !important;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.2) !important;
     }
-    div[data-testid="stRadio"] label span {
+    div[data-testid="stRadio"] label,
+    div[data-testid="stRadio"] label p,
+    div[data-testid="stRadio"] label span,
+    div[data-testid="stRadio"] div[data-testid="stMarkdownContainer"] p {
         color: #f8fafc !important;
+        font-weight: 600 !important;
     }
+    
+    /* Sub-Tabs (Departmental Capability, Matrix, etc.) */
+    button[data-testid="stTab"] {
+        background-color: transparent !important;
+        border-color: transparent !important;
+    }
+    button[data-testid="stTab"] p {
+        color: #94a3b8 !important;
+        font-weight: 600 !important;
+        font-size: 0.92rem !important;
+    }
+    button[data-testid="stTab"][aria-selected="true"] {
+        border-bottom: 2px solid #38bdf8 !important;
+    }
+    button[data-testid="stTab"][aria-selected="true"] p {
+        color: #38bdf8 !important;
+        font-weight: 700 !important;
+    }
+
+    /* Right-Side Filter Pane Card */
     .right-filter-pane {
         background: #1e293b !important;
         border: 1px solid #334155 !important;
@@ -184,6 +330,46 @@ theme_css = """
     .filter-title-text {
         color: #f8fafc !important;
     }
+    
+    /* Form inputs, Multiselect, Selectbox & Sliders */
+    label p, label span, .stWidgetLabel p {
+        color: #f8fafc !important;
+        font-weight: 600 !important;
+    }
+    div[data-baseweb="select"] > div {
+        background-color: #0f172a !important;
+        color: #f8fafc !important;
+        border: 1px solid #334155 !important;
+    }
+    div[data-baseweb="tag"] {
+        background-color: #1e293b !important;
+        color: #f8fafc !important;
+    }
+    div[data-baseweb="tag"] span {
+        color: #f8fafc !important;
+        font-weight: 500 !important;
+    }
+    div[data-testid="stExpander"] {
+        background-color: #1e293b !important;
+        border: 1px solid #334155 !important;
+    }
+    div[data-testid="stExpander"] summary span,
+    div[data-testid="stExpander"] summary p {
+        color: #f8fafc !important;
+        font-weight: 600 !important;
+    }
+    div[data-testid="stCheckbox"] label p {
+        color: #f8fafc !important;
+    }
+    div[data-testid="stSlider"] div,
+    div[data-testid="stSlider"] p {
+        color: #f8fafc !important;
+    }
+    .stMarkdown p, .stMarkdown span {
+        color: #f8fafc;
+    }
+
+    /* Informational & Alert Banners */
     .callout-box {
         background: rgba(37, 99, 235, 0.12) !important;
         border-left: 4px solid #3b82f6 !important;
