@@ -1,11 +1,19 @@
 """
-D26: Training Effectiveness Data Analysis - Executive Analytics Portal
+D26: Training Effectiveness Data Analysis - Dynamic Enterprise Portal
 Institution: ABES Engineering College | MCA 2nd Year
 Domain: Human Resources Analytics (EdTech, HCLTech template)
-Interactive Streamlit Dashboard with Plotly Visualizations, ROI Simulator & Statistical Lab
+Features:
+- PBKDF2-SHA256 Authentication & Authorization Keys
+- Role-Based Access Control (CHRO Admin, HR Manager, L&D Specialist, Dept Lead)
+- Account Lockout & Inactivity Protection
+- Dynamic SQLite Relational Database Backend
+- Live Employee Onboarding, Training Logging & Retention Interventions
+- Live Audit Trail & Governance Tracking
+- Interactive What-If ROI Simulator & Statistical Lab
 """
 
 import os
+import sys
 import numpy as np
 import pandas as pd
 import plotly.express as px
@@ -20,30 +28,41 @@ try:
 except ImportError:
     HAS_STATSMODELS = False
 
-# Set Streamlit Page Configuration
+# Import Database and Auth engine
+from dashboard.db import (
+    init_database, authenticate_user, register_user,
+    get_live_analytics_data, onboard_new_employee,
+    log_training_completion, apply_retention_intervention,
+    get_audit_trail, get_interventions_log, AUTH_KEYS
+)
+
+# Page Configuration
 st.set_page_config(
     page_title="Training Effectiveness Analytics | D26",
-    page_icon="📊",
+    page_icon="🎓",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
-# Custom High-End Styling CSS
+# Ensure database is initialized
+init_database()
+
+# Custom UI Styles
 st.markdown("""
 <style>
-    /* Metric Cards Styling */
+    /* Metric Cards */
     .metric-card {
         background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
         border: 1px solid #334155;
         border-radius: 12px;
         padding: 16px 20px;
         box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
-        margin-bottom: 15px;
+        margin-bottom: 12px;
     }
     .metric-label {
-        font-size: 0.85rem;
+        font-size: 0.82rem;
         color: #94a3b8;
-        font-weight: 500;
+        font-weight: 600;
         text-transform: uppercase;
         letter-spacing: 0.05em;
         margin-bottom: 4px;
@@ -55,30 +74,30 @@ st.markdown("""
         line-height: 1.2;
     }
     .metric-delta-pos {
-        font-size: 0.85rem;
+        font-size: 0.82rem;
         color: #10b981;
         font-weight: 600;
         margin-top: 4px;
     }
     .metric-delta-neg {
-        font-size: 0.85rem;
+        font-size: 0.82rem;
         color: #ef4444;
         font-weight: 600;
         margin-top: 4px;
     }
     .metric-delta-neutral {
-        font-size: 0.85rem;
+        font-size: 0.82rem;
         color: #38bdf8;
         font-weight: 600;
         margin-top: 4px;
     }
-    /* Banner Callout */
+    /* Informational Banners */
     .callout-box {
-        background: rgba(37, 99, 235, 0.1);
+        background: rgba(37, 99, 235, 0.12);
         border-left: 4px solid #3b82f6;
         padding: 14px 18px;
         border-radius: 0 8px 8px 0;
-        margin-bottom: 20px;
+        margin-bottom: 18px;
         color: #e2e8f0;
     }
     .alert-box {
@@ -86,51 +105,188 @@ st.markdown("""
         border-left: 4px solid #ef4444;
         padding: 14px 18px;
         border-radius: 0 8px 8px 0;
-        margin-bottom: 20px;
+        margin-bottom: 18px;
         color: #fecaca;
     }
+    .badge-pill {
+        display: inline-block;
+        padding: 3px 10px;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+    }
+    .badge-admin { background: #7c3aed; color: #ffffff; }
+    .badge-manager { background: #2563eb; color: #ffffff; }
+    .badge-lead { background: #059669; color: #ffffff; }
+    .badge-lnd { background: #d97706; color: #ffffff; }
 </style>
 """, unsafe_allow_html=True)
 
-# Data Loading with Caching
-@st.cache_data
-def load_cleaned_data():
-    paths = [
-        os.path.join("data", "clean", "training_effectiveness_cleaned.csv"),
-        os.path.join("..", "data", "clean", "training_effectiveness_cleaned.csv")
-    ]
-    for p in paths:
-        if os.path.exists(p):
-            df = pd.read_csv(p)
-            df['join_date'] = pd.to_datetime(df['join_date'])
-            df['exit_date'] = pd.to_datetime(df['exit_date'])
-            return df
-            
-    # Fallback if clean data not present: run cleaner or generate on fly
-    from scripts.clean_data import clean_training_data
-    return clean_training_data()
+# Initialize Session State
+if 'authenticated' not in st.session_state:
+    st.session_state['authenticated'] = False
+if 'user' not in st.session_state:
+    st.session_state['user'] = None
 
-df_full = load_cleaned_data()
+# =============================================================
+# AUTHENTICATION SCREEN (LOGIN & REGISTRATION)
+# =============================================================
+if not st.session_state['authenticated']:
+    st.title("🔐 Enterprise L&D Intelligence Portal")
+    st.caption("Project D26: Training Effectiveness Data Analysis · ABES EC | MCA 2nd Year | HCLTech")
+
+    st.markdown("""
+    <div class="callout-box">
+    <b>Secure Staff Access Required:</b> Please sign in with your corporate credentials or register with a departmental authorization key.
+    All sessions and administrative modifications are audited.
+    </div>
+    """, unsafe_allow_html=True)
+
+    auth_tab1, auth_tab2, auth_tab3 = st.tabs(["🔑 Sign In", "📝 Register New Staff", "💡 Demo Credentials"])
+
+    # --- TAB 1: SIGN IN ---
+    with auth_tab1:
+        with st.form("login_form"):
+            login_user = st.text_input("Username", placeholder="e.g. chro_admin or hr_manager")
+            login_pwd = st.text_input("Password", type="password", placeholder="Enter your password")
+            submit_login = st.form_submit_button("Sign In to Portal", use_container_width=True)
+
+            if submit_login:
+                if not login_user or not login_pwd:
+                    st.error("Please enter both username and password.")
+                else:
+                    auth_result = authenticate_user(login_user.strip(), login_pwd)
+                    if auth_result["success"]:
+                        st.session_state['authenticated'] = True
+                        st.session_state['user'] = auth_result["user"]
+                        st.success(f"Welcome back, {auth_result['user']['full_name']}!")
+                        st.rerun()
+                    else:
+                        st.error(auth_result["message"])
+
+    # --- TAB 2: REGISTER ---
+    with auth_tab2:
+        with st.form("register_form"):
+            reg_user = st.text_input("Choose Username", placeholder="e.g. rahul_analyst")
+            reg_name = st.text_input("Full Name", placeholder="e.g. Rahul Sharma")
+            reg_email = st.text_input("Corporate Email", placeholder="e.g. rahul.sharma@enterprise.in")
+            reg_dept = st.selectbox("Department", ["Human Resources", "Engineering", "Data Science & AI", "Sales & Marketing", "Finance", "Operations", "Customer Success"])
+            reg_key = st.text_input("Department Authorization Key", placeholder="Enter valid authorization key from HR Head")
+            reg_pwd = st.text_input("Password (min 8 chars, 1 uppercase, 1 number)", type="password")
+            submit_reg = st.form_submit_button("Create Staff Account", use_container_width=True)
+
+            if submit_reg:
+                if not reg_user or not reg_name or not reg_email or not reg_pwd or not reg_key:
+                    st.error("All fields including authorization key are required.")
+                else:
+                    reg_result = register_user(
+                        reg_user.strip(), reg_name.strip(), reg_email.strip(),
+                        reg_pwd, reg_key.strip(), reg_dept
+                    )
+                    if reg_result["success"]:
+                        st.success(reg_result["message"])
+                    else:
+                        st.error(reg_result["message"])
+
+    # --- TAB 3: DEMO CREDENTIALS ---
+    with auth_tab3:
+        st.markdown("### Pre-Configured Demo Credentials")
+        st.markdown("Use any of the following accounts to test different roles and data permissions:")
+        
+        col_c1, col_c2 = st.columns(2)
+        with col_c1:
+            st.info("""
+            **👑 CHRO (Executive Admin)**  
+            - **Username:** `chro_admin`  
+            - **Password:** `Admin@2026`  
+            - **Scope:** Global Enterprise (All Departments)  
+            - **Permissions:** Full Analytics, Simulator, Retention Approvals, Audit Log
+            """)
+            st.success("""
+            **💼 HR Manager**  
+            - **Username:** `hr_manager`  
+            - **Password:** `HrManager@2026`  
+            - **Scope:** Global Enterprise  
+            - **Permissions:** Employee Onboarding, Talent Flight Interventions, Exports
+            """)
+        with col_c2:
+            st.warning("""
+            **🎓 L&D Specialist**  
+            - **Username:** `lnd_lead`  
+            - **Password:** `Lnd@2026`  
+            - **Scope:** Learning Programs  
+            - **Permissions:** Log Training Hours, Update Test Scores, Program ROI
+            """)
+            st.info("""
+            **💻 Department Lead (Engineering)**  
+            - **Username:** `eng_lead`  
+            - **Password:** `EngLead@2026`  
+            - **Scope:** Scoped to Engineering Department  
+            - **Permissions:** Engineering Performance & Attendance Analytics
+            """)
+
+        st.markdown("#### Department Authorization Keys for Self-Registration")
+        st.code("""
+        CHRO (Admin):     CHRO-EXEC-2026
+        HR Manager:       HR-TEAM-2026
+        L&D Specialist:   LND-PORTAL-2026
+        Department Lead:  DEPT-LEAD-2026
+        """, language="text")
+
+    st.stop()
+
+# =============================================================
+# AUTHENTICATED APPLICATION PORTAL
+# =============================================================
+current_user = st.session_state['user']
+user_role = current_user['role']
+user_dept = current_user['department']
+
+# Role Badge Class
+badge_class = "badge-admin" if "CHRO" in user_role else ("badge-manager" if "Manager" in user_role else ("badge-lead" if "Lead" in user_role else "badge-lnd"))
+
+# Top Bar
+col_top1, col_top2 = st.columns([4, 1])
+with col_top1:
+    st.markdown(f"""
+    <div style="display:flex; align-items:center; gap:12px; margin-bottom:8px;">
+        <h2 style="margin:0;">🎯 Enterprise Training Effectiveness Analytics</h2>
+        <span class="badge-pill {badge_class}">{user_role.upper()}</span>
+    </div>
+    <span style="color:#94a3b8; font-size:0.9rem;">Signed in as <b>{current_user['full_name']}</b> ({current_user['email']}) · Scope: <b>{user_dept if user_role == 'Department Lead' else 'Global Enterprise'}</b></span>
+    """, unsafe_allow_html=True)
+with col_top2:
+    if st.button("🚪 Sign Out", use_container_width=True):
+        st.session_state['authenticated'] = False
+        st.session_state['user'] = None
+        st.rerun()
 
 # -------------------------------------------------------------
-# SIDEBAR FILTERS & CONTROLS
+# SIDEBAR FILTERS (ROLE-AWARE)
 # -------------------------------------------------------------
 with st.sidebar:
-    st.image("https://img.icons8.com/fluency/96/combo-chart.png", width=64)
-    st.title("L&D Intelligence")
-    st.caption("D26 · Training Effectiveness Analysis\nABES EC | MCA 2nd Year | HCLTech")
+    st.image("https://img.icons8.com/fluency/96/combo-chart.png", width=60)
+    st.subheader(current_user['full_name'])
+    st.caption(f"Role: {user_role} | {current_user['department']}")
     st.markdown("---")
 
-    st.subheader("Global Filters")
+    st.subheader("Cohort Filters")
     
-    # Department Filter
-    all_depts = sorted(df_full['department'].unique().tolist())
-    selected_depts = st.multiselect("Department", all_depts, default=all_depts)
-    
+    # Load live data from SQLite
+    if user_role == "Department Lead":
+        df_full = get_live_analytics_data(scoped_department=user_dept)
+        st.info(f"🔒 Data scoped strictly to **{user_dept}** based on your security role.")
+        selected_depts = [user_dept]
+    else:
+        df_full = get_live_analytics_data(scoped_department="All")
+        all_depts = sorted(df_full['department'].unique().tolist())
+        selected_depts = st.multiselect("Department", all_depts, default=all_depts)
+
     # Training Tier Filter
     all_tiers = sorted(df_full['training_tier'].unique().tolist())
     selected_tiers = st.multiselect("Training Tier", all_tiers, default=all_tiers)
-    
+
     # Gender Filter
     all_genders = sorted(df_full['gender'].unique().tolist())
     selected_genders = st.multiselect("Gender", all_genders, default=all_genders)
@@ -149,25 +305,13 @@ with st.sidebar:
 
     st.markdown("---")
     st.markdown(f"**Filtered Cohort:** `{len(df):,}` / `{len(df_full):,}` employees")
-    if st.button("Reset All Filters", use_container_width=True):
+    if st.button("Reset Filters", use_container_width=True):
         st.rerun()
 
 # -------------------------------------------------------------
-# MAIN APP HEADER & TITLE
-# -------------------------------------------------------------
-st.title("🎯 Enterprise Training Effectiveness & ROI Dashboard")
-st.markdown("""
-<div class="callout-box">
-<b>Executive HR Briefing:</b> Quantifying workforce capability development, performance rating uplift, 
-attendance improvements, talent retention, and financial return on human capital investment across 5,000 corporate records.
-</div>
-""", unsafe_allow_html=True)
-
-# -------------------------------------------------------------
-# TOP LEVEL EXECUTIVE KPI CARDS
+# TOP KPI CARDS
 # -------------------------------------------------------------
 col1, col2, col3, col4, col5 = st.columns(5)
-
 total_emps = len(df)
 active_trainees = (df['training_hours'] >= 15).sum()
 participation_rate = (active_trainees / total_emps * 100) if total_emps > 0 else 0
@@ -199,7 +343,7 @@ with col3:
     <div class="metric-card">
         <div class="metric-label">Mean Rating Uplift</div>
         <div class="metric-value">+{mean_uplift:.2f}</div>
-        <div class="metric-delta-pos">▲ +0.12 vs Benchmark (+0.40)</div>
+        <div class="metric-delta-pos">▲ +0.12 vs Target (+0.40)</div>
     </div>
     """, unsafe_allow_html=True)
 
@@ -208,7 +352,7 @@ with col4:
     <div class="metric-card">
         <div class="metric-label">Attrition Rate</div>
         <div class="metric-value">{attrition_rate:.1f}%</div>
-        <div class="metric-delta-pos">▼ -3.4% vs Baseline</div>
+        <div class="metric-delta-pos">▼ -3.4% YoY Reduction</div>
     </div>
     """, unsafe_allow_html=True)
 
@@ -222,19 +366,22 @@ with col5:
     """, unsafe_allow_html=True)
 
 # -------------------------------------------------------------
-# 9 INTERACTIVE TABS
+# 10 WORKSPACE TABS
 # -------------------------------------------------------------
-tabs = st.tabs([
+tab_titles = [
     "📈 Executive Overview",
     "🏢 Departments & Roles",
     "📚 Training Program ROI",
     "⏰ Attendance & Discipline",
     "🚨 Retention & Flight Risk",
     "🧮 What-If ROI Simulator",
-    "👤 Employee 360",
+    "👤 Employee 360 & Operations",
     "🔬 Statistical Lab",
+    "🛡️ Audit Trail & Governance",
     "📑 Reports & Export"
-])
+]
+
+tabs = st.tabs(tab_titles)
 
 # =============================================================
 # TAB 1: EXECUTIVE OVERVIEW
@@ -244,7 +391,6 @@ with tabs[0]:
     
     col_a, col_b = st.columns([3, 2])
     with col_a:
-        # Pre vs Post Rating Distribution
         fig_ratings = go.Figure()
         fig_ratings.add_trace(go.Histogram(
             x=df['pre_training_rating'], name='Pre-Training Rating',
@@ -267,7 +413,6 @@ with tabs[0]:
         st.plotly_chart(fig_ratings, use_container_width=True)
 
     with col_b:
-        # Training Tier Distribution Donut
         tier_counts = df['training_tier'].value_counts().reset_index()
         tier_counts.columns = ['Tier', 'Count']
         fig_pie = px.pie(
@@ -284,7 +429,6 @@ with tabs[0]:
         fig_pie.update_layout(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)')
         st.plotly_chart(fig_pie, use_container_width=True)
 
-    # Monthly Onboarding & Training Progress Trend
     df['join_month'] = df['join_date'].dt.to_period('M').astype(str)
     monthly_trend = df.groupby('join_month').agg(
         Hired=('employee_id', 'count'),
@@ -343,7 +487,6 @@ with tabs[1]:
         st.plotly_chart(fig_dept_uplift, use_container_width=True)
 
     with col_d2:
-        # Pre vs Post Rating Comparison
         fig_pre_post = go.Figure()
         fig_pre_post.add_trace(go.Bar(
             name='Pre-Training', y=dept_stats['department'], x=dept_stats['Pre_Rating'],
@@ -394,7 +537,6 @@ with tabs[2]:
         Total_Cost=('hr_cost', 'sum')
     ).reset_index()
 
-    # Calculate Program ROI Proxy
     prog_stats['Cost_per_Uplift_Point'] = (prog_stats['Avg_Cost'] / prog_stats['Rating_Uplift']).round(0)
 
     fig_bubble = px.scatter(
@@ -410,7 +552,6 @@ with tabs[2]:
 
     col_p1, col_p2 = st.columns(2)
     with col_p1:
-        # Score vs Uplift Scatter
         fig_score_uplift = px.scatter(
             df.sample(min(len(df), 800), random_state=42),
             x='training_score', y='rating_improvement', color='training_type',
@@ -423,7 +564,6 @@ with tabs[2]:
         st.plotly_chart(fig_score_uplift, use_container_width=True)
 
     with col_p2:
-        # Program Performance Table
         st.markdown("#### Program Financial Metrics")
         st.dataframe(
             prog_stats[['training_program_name', 'Enrolled', 'Avg_Score', 'Rating_Uplift', 'Avg_Cost', 'Cost_per_Uplift_Point']]
@@ -474,7 +614,6 @@ with tabs[3]:
         fig_att.update_layout(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)')
         st.plotly_chart(fig_att, use_container_width=True)
 
-    # Correlation Scatter with Trendline
     fig_corr_late = px.scatter(
         df.sample(min(len(df), 600), random_state=42),
         x='training_hours', y='late_arrivals',
@@ -502,7 +641,6 @@ with tabs[4]:
     </div>
     """, unsafe_allow_html=True)
 
-    # Calculate Cohort Attrition Rates
     cohort_data = pd.DataFrame({
         'Cohort': [
             'General Workforce',
@@ -548,7 +686,7 @@ with tabs[4]:
             }),
             use_container_width=True
         )
-        st.info("💡 Strategic Fix: Implement an automated compensation adjustment alert within 60 days of course completion.")
+        st.info("💡 Strategic Fix: Apply a retention salary correction in Tab 7 to neutralize flight risk immediately.")
 
 # =============================================================
 # TAB 6: WHAT-IF ROI SCENARIO SIMULATOR
@@ -564,25 +702,17 @@ with tabs[5]:
         sim_salary_budget_boost = st.slider("Retention Compensation Adjustment Budget (% of Base)", 0.0, 15.0, 5.0, step=0.5)
 
     with sim_col2:
-        # Mathematical Simulation Formulae
         base_headcount = len(df)
         projected_participants = int(base_headcount * (sim_participation / 100.0))
-        
-        # Projected Uplift: Logarithmic function of training hours
         projected_uplift = 0.20 + (0.018 * sim_target_hours)
-        
-        # Projected Attrition reduction: Lower base attrition + retention budget mitigates poaching
         projected_attrition = max(4.0, 22.0 - (0.28 * sim_target_hours) - (sim_salary_budget_boost * 0.9))
         
-        # Financial Model
         cost_per_trainee = 25000 + (sim_target_hours * 350)
         total_training_cost = projected_participants * cost_per_trainee
         retention_budget = projected_participants * (df['salary'].median() * (sim_salary_budget_boost / 100.0))
         total_intervention_cost = total_training_cost + retention_budget
         
-        # Estimated economic value created (10% productivity gain per 1.0 rating increase on salary)
         value_created = projected_participants * (projected_uplift * 0.10 * df['salary'].median())
-        # Add replacement cost savings from reduced turnover (saving ₹ 4.5 Lakhs recruitment cost per retained employee)
         baseline_exits = base_headcount * 0.16
         simulated_exits = base_headcount * (projected_attrition / 100.0)
         turnover_savings = max(0, (baseline_exits - simulated_exits) * 450000)
@@ -614,44 +744,170 @@ with tabs[5]:
         """, unsafe_allow_html=True)
 
 # =============================================================
-# TAB 7: EMPLOYEE 360 EXPLORER
+# TAB 7: EMPLOYEE 360 & DYNAMIC HR OPERATIONS
 # =============================================================
 with tabs[6]:
-    st.subheader("Employee 360 Capability & Training Profile")
-    
-    col_search1, col_search2 = st.columns([2, 3])
-    with col_search1:
-        emp_search = st.selectbox("Select Employee to Inspect", df['employee_id'] + " - " + df['employee_name'])
-        selected_emp_id = emp_search.split(" - ")[0]
-        emp_data = df[df['employee_id'] == selected_emp_id].iloc[0]
+    st.subheader("Employee 360 Explorer & Live Operations Desk")
 
-    with col_search2:
-        is_risk = emp_data['is_flight_risk']
-        badge_html = "<span style='background:#ef4444;color:white;padding:4px 8px;border-radius:4px;'>🚨 HIGH FLIGHT RISK (POACHING)</span>" if is_risk else "<span style='background:#10b981;color:white;padding:4px 8px;border-radius:4px;'>✅ LOW RETENTION RISK</span>"
-        st.markdown(f"### {emp_data['employee_name']} ({emp_data['employee_id']}) {badge_html}", unsafe_allow_html=True)
-        st.caption(f"{emp_data['job_role']} | {emp_data['department']} | {emp_data['city']}, {emp_data['state']}")
+    e360_tab1, e360_tab2, e360_tab3, e360_tab4 = st.tabs([
+        "🔍 Employee Scorecard",
+        "🎯 Log Training Completion (L&D)",
+        "🛡️ Retention Action (HR/CHRO)",
+        "➕ Onboard New Employee (HR)"
+    ])
 
-    col_e1, col_e2, col_e3, col_e4 = st.columns(4)
-    col_e1.metric("Pre-Training Rating", f"{emp_data['pre_training_rating']:.1f}")
-    col_e2.metric("Post-Training Rating", f"{emp_data['performance_rating']:.1f}", f"+{emp_data['rating_improvement']:.2f}")
-    col_e3.metric("Training Assessment Score", f"{emp_data['training_score']:.1f}%")
-    col_e4.metric("Logged Training Hours", f"{emp_data['training_hours']:.1f} hrs")
+    # --- SUBTAB 1: EMPLOYEE SCORECARD ---
+    with e360_tab1:
+        col_search1, col_search2 = st.columns([2, 3])
+        with col_search1:
+            emp_search = st.selectbox("Select Employee to Inspect", df['employee_id'] + " - " + df['employee_name'])
+            selected_emp_id = emp_search.split(" - ")[0]
+            emp_data = df[df['employee_id'] == selected_emp_id].iloc[0]
 
-    col_prof1, col_prof2 = st.columns(2)
-    with col_prof1:
-        st.markdown("#### Profile & Compensation Details")
-        st.write(f"**Experience:** {emp_data['experience_years']} Years")
-        st.write(f"**Annual Salary:** ₹ {emp_data['salary']:,}")
-        st.write(f"**Direct Manager:** `{emp_data['manager_id']}`")
-        st.write(f"**Join Date:** {emp_data['join_date'].strftime('%Y-%m-%d')}")
-        st.write(f"**Status:** {'Resigned / Attrited (' + emp_data['exit_date'].strftime('%Y-%m-%d') + ')' if emp_data['attrition_flag'] == 'Yes' else 'Active'}")
+        with col_search2:
+            is_risk = emp_data['is_flight_risk']
+            badge_html = "<span style='background:#ef4444;color:white;padding:4px 8px;border-radius:4px;'>🚨 HIGH FLIGHT RISK (POACHING)</span>" if is_risk else "<span style='background:#10b981;color:white;padding:4px 8px;border-radius:4px;'>✅ LOW RETENTION RISK</span>"
+            st.markdown(f"### {emp_data['employee_name']} ({emp_data['employee_id']}) {badge_html}", unsafe_allow_html=True)
+            st.caption(f"{emp_data['job_role']} | {emp_data['department']} | {emp_data['city']}, {emp_data['state']}")
 
-    with col_prof2:
-        st.markdown("#### Learning & Discipline Record")
-        st.write(f"**Assigned Program:** {emp_data['training_program_name']} ({emp_data['training_type']})")
-        st.write(f"**HR Investment Cost:** ₹ {emp_data['hr_cost']:,}")
-        st.write(f"**Annual Attendance Days:** {emp_data['attendance_days']} Days")
-        st.write(f"**Annual Late Arrivals:** {emp_data['late_arrivals']} Times")
+        col_e1, col_e2, col_e3, col_e4 = st.columns(4)
+        col_e1.metric("Pre-Training Rating", f"{emp_data['pre_training_rating']:.1f}")
+        col_e2.metric("Post-Training Rating", f"{emp_data['performance_rating']:.1f}", f"+{emp_data['rating_improvement']:.2f}")
+        col_e3.metric("Training Assessment Score", f"{emp_data['training_score']:.1f}%")
+        col_e4.metric("Logged Training Hours", f"{emp_data['training_hours']:.1f} hrs")
+
+        col_prof1, col_prof2 = st.columns(2)
+        with col_prof1:
+            st.markdown("#### Profile & Remuneration Details")
+            st.write(f"**Experience:** {emp_data['experience_years']} Years")
+            st.write(f"**Annual Remuneration:** ₹ {emp_data['salary']:,}")
+            st.write(f"**Direct Supervisor:** `{emp_data['manager_id']}`")
+            st.write(f"**Join Date:** {emp_data['join_date'].strftime('%Y-%m-%d')}")
+            st.write(f"**Status:** {'Resigned / Attrited (' + emp_data['exit_date'].strftime('%Y-%m-%d') + ')' if emp_data['attrition_flag'] == 'Yes' else 'Active'}")
+
+        with col_prof2:
+            st.markdown("#### Learning & Discipline Record")
+            st.write(f"**Enrolled Program:** {emp_data['training_program_name']} ({emp_data['training_type']})")
+            st.write(f"**HR Investment Cost:** ₹ {emp_data['hr_cost']:,}")
+            st.write(f"**Annual Attendance Days:** {emp_data['attendance_days']} Days")
+            st.write(f"**Annual Late Arrivals:** {emp_data['late_arrivals']} Times")
+
+    # --- SUBTAB 2: LOG TRAINING COMPLETION (L&D) ---
+    with e360_tab2:
+        st.markdown("#### Log Training Hours & Assessment Score")
+        st.caption("Available to L&D Specialists and Managers. Updates performance ratings, attendance, and recalculates flight risk in the live database.")
+        
+        with st.form("log_training_form"):
+            t_emp_id = st.selectbox("Select Employee", df['employee_id'] + " - " + df['employee_name'], key="t_emp_select")
+            actual_emp_id = t_emp_id.split(" - ")[0]
+            
+            t_prog = st.selectbox("Training Program", [
+                "Generative AI & LLM Applications",
+                "Full-Stack Cloud & DevOps",
+                "Advanced Data Analytics & Power BI",
+                "Strategic Leadership & Agile Management",
+                "Enterprise Consultative Selling",
+                "Financial Modeling & Risk Management",
+                "Business Communication & Negotiation",
+                "Design Thinking & Innovation",
+                "Corporate Governance & POSH Compliance"
+            ])
+            t_hours = st.number_input("Logged Training Hours", min_value=1.0, max_value=80.0, value=40.0, step=1.0)
+            t_score = st.slider("Assessment Mastery Score (%)", min_value=0.0, max_value=100.0, value=85.0, step=1.0)
+            submit_training = st.form_submit_button("Submit Training Completion Record", use_container_width=True)
+
+            if submit_training:
+                t_res = log_training_completion(actual_emp_id, t_prog, t_hours, t_score, current_user)
+                if t_res["success"]:
+                    st.success(t_res["message"])
+                    st.rerun()
+                else:
+                    st.error(t_res["message"])
+
+    # --- SUBTAB 3: RETENTION INTERVENTION (HR / CHRO) ---
+    with e360_tab3:
+        st.markdown("#### Talent Retention Desk: Neutralize Flight Risk")
+        st.caption("Apply market correction hikes, retention bonuses, or promotions to retain high-performing upskilled employees.")
+
+        flight_risk_df = df_full[df_full['is_flight_risk']]
+        st.write(f"Currently **{len(flight_risk_df)} employees** flagged with high competitor poaching risk.")
+        
+        with st.form("retention_form"):
+            if len(flight_risk_df) > 0:
+                ret_emp = st.selectbox("Select Flagged Employee", flight_risk_df['employee_id'] + " - " + flight_risk_df['employee_name'] + f" (Current: ₹ " + flight_risk_df['salary'].astype(str) + ")")
+                target_emp_id = ret_emp.split(" - ")[0]
+            else:
+                target_emp_id = st.text_input("Employee ID", placeholder="EMP-XXXX")
+
+            ret_action = st.selectbox("Intervention Type", [
+                "Market Salary Correction (+15%)",
+                "Retention Bonus & Benchmarking (+20%)",
+                "Special Merit Revision (+25%)",
+                "Fast-Track Promotion & Grade Revision"
+            ])
+            hike_pct = st.slider("Remuneration Adjustment (%)", min_value=5.0, max_value=40.0, value=15.0, step=2.5)
+            ret_note = st.text_area("Justification Note", placeholder="e.g. Critical AI upskilled talent retained against competing offer.")
+            submit_retention = st.form_submit_button("Authorize Retention Intervention", use_container_width=True)
+
+            if submit_retention:
+                if not target_emp_id:
+                    st.error("Please specify a valid Employee ID.")
+                else:
+                    ret_res = apply_retention_intervention(target_emp_id, ret_action, hike_pct, ret_note, current_user)
+                    if ret_res["success"]:
+                        st.success(ret_res["message"])
+                        st.rerun()
+                    else:
+                        st.error(ret_res["message"])
+
+    # --- SUBTAB 4: ONBOARD NEW EMPLOYEE ---
+    with e360_tab4:
+        st.markdown("#### Onboard New Corporate Employee")
+        st.caption("Adds a new employee record and initializes baseline training metrics in SQLite.")
+
+        with st.form("onboard_form"):
+            o_id = st.text_input("New Employee ID", value=f"EMP-{len(df_full) + 1001}")
+            o_name = st.text_input("Employee Full Name", placeholder="e.g. Ananya Sen")
+            o_dept = st.selectbox("Department", ["Engineering", "Data Science & AI", "Sales & Marketing", "Human Resources", "Finance", "Operations", "Customer Success"])
+            o_role = st.text_input("Designation", placeholder="e.g. Associate Data Analyst")
+            o_gender = st.selectbox("Gender", ["Female", "Male", "Other"])
+            o_city = st.selectbox("Location City", ["Bengaluru", "Pune", "Hyderabad", "Gurugram", "Noida", "Mumbai", "Chennai"])
+            o_exp = st.number_input("Years of Experience", min_value=0.0, max_value=25.0, value=3.0, step=0.5)
+            o_salary = st.number_input("Starting Annual Salary (INR)", min_value=350000, max_value=5000000, value=850000, step=25000)
+            o_rating = st.slider("Baseline Pre-Training Rating", min_value=1.0, max_value=5.0, value=3.0, step=0.1)
+            o_mgr = st.text_input("Manager ID", value="MGR-1025")
+            o_prog = st.selectbox("Assigned Onboarding Program", [
+                "Full-Stack Cloud & DevOps",
+                "Advanced Data Analytics & Power BI",
+                "Generative AI & LLM Applications",
+                "Strategic Leadership & Agile Management",
+                "Corporate Governance & POSH Compliance"
+            ])
+            submit_onboard = st.form_submit_button("Register & Onboard Employee", use_container_width=True)
+
+            if submit_onboard:
+                new_emp_data = {
+                    'employee_id': o_id.strip(),
+                    'employee_name': o_name.strip(),
+                    'department': o_dept,
+                    'job_role': o_role.strip(),
+                    'gender': o_gender,
+                    'city': o_city,
+                    'state': "Karnataka" if o_city == "Bengaluru" else ("Maharashtra" if o_city in ["Mumbai", "Pune"] else "Telangana"),
+                    'join_date': datetime.now().strftime("%Y-%m-%d"),
+                    'experience_years': o_exp,
+                    'salary': int(o_salary),
+                    'pre_training_rating': o_rating,
+                    'manager_id': o_mgr.strip(),
+                    'training_program_name': o_prog,
+                    'training_type': "Technical" if "AI" in o_prog or "Cloud" in o_prog or "Data" in o_prog else "Compliance"
+                }
+                onb_res = onboard_new_employee(new_emp_data, current_user)
+                if onb_res["success"]:
+                    st.success(onb_res["message"])
+                    st.rerun()
+                else:
+                    st.error(onb_res["message"])
 
 # =============================================================
 # TAB 8: STATISTICAL HYPOTHESIS LAB
@@ -695,9 +951,30 @@ with tabs[7]:
     st.plotly_chart(fig_corr, use_container_width=True)
 
 # =============================================================
-# TAB 9: REPORTS & DATA EXPORT
+# TAB 9: AUDIT TRAIL & GOVERNANCE
 # =============================================================
 with tabs[8]:
+    st.subheader("🛡️ Enterprise Security & Audit Log")
+    st.caption("Immutable system and administrative trail tracking all sign-ins, employee additions, training updates, and retention actions.")
+
+    col_aud1, col_aud2 = st.columns([1, 1])
+    with col_aud1:
+        st.markdown("#### Recent Activity Trail")
+        audit_df = get_audit_trail(limit=100)
+        st.dataframe(audit_df, use_container_width=True)
+
+    with col_aud2:
+        st.markdown("#### Retention Interventions History")
+        interventions_df = get_interventions_log()
+        if len(interventions_df) > 0:
+            st.dataframe(interventions_df, use_container_width=True)
+        else:
+            st.info("No retention interventions recorded yet. Actions taken in Tab 7 will appear here.")
+
+# =============================================================
+# TAB 10: REPORTS & EXPORT CENTER
+# =============================================================
+with tabs[9]:
     st.subheader("Data Center & Executive Report Exports")
     
     col_exp1, col_exp2 = st.columns([3, 1])
