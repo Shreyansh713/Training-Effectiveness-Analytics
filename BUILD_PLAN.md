@@ -1,7 +1,8 @@
-# BUILD PLAN & VIVA VOCE GUIDE (D26)
+# BUILD PLAN & VIVA VOCE GUIDE (P073)
+**Project Code:** P073  
 **Project Title:** Training Effectiveness Data Analysis  
 **Institution:** ABES Engineering College, Ghaziabad  
-**Programme / Batch:** MCA 2nd Year Data Analyst - ABES_OND26_MCA Batch 1  
+**Programme / Batch:** ABES_OND26_MCA 2nd Year_Data Analytics_Batch 01  
 **Learner:** Shreyansh (Roll No: 2500320140140) | **Mentor:** Dinesh Sereno  
 **Repository:** https://github.com/Shreyansh713/Training-Effectiveness-Analytics.git  
 **Live App:** https://training-effectiveness-analytics-jyzbvf3sktjk9wqhcrpddz.streamlit.app/  

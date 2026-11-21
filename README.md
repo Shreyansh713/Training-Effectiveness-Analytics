@@ -1,4 +1,4 @@
-# Training Effectiveness Data Analysis (D26)
+# Training Effectiveness Data Analysis (P073)
 
 [![Python](https://img.shields.io/badge/Python-3.11%2B-blue?logo=python&logoColor=white)](https://python.org)
 [![Streamlit](https://img.shields.io/badge/Streamlit-1.40%2B-FF4B4B?logo=streamlit&logoColor=white)](https://streamlit.io)
@@ -20,10 +20,10 @@ The application features full end-to-end operational capabilities: **PBKDF2-SHA2
 
 | Field | Project Details |
 |:---|:---|
-| **Project Code** | **D26** |
+| **Project Code** | **P073** |
 | **Project Title** | **Training Effectiveness Data Analysis** |
 | **Institution** | **ABES Engineering College \| MCA 2nd Year** |
-| **Programme / Batch** | **MCA 2nd Year Data Analyst - ABES_OND26_MCA Batch 1** |
+| **Programme / Batch** | **ABES_OND26_MCA 2nd Year_Data Analytics_Batch 01** |
 | **Learner** | **Shreyansh \| Roll No: 2500320140140** |
 | **Mentor** | **Dinesh Sereno** |
 | **Track** | **Data Analyst** |

@@ -1,8 +1,8 @@
 # Enterprise Training Effectiveness: Executive Presentation
 
-**Project:** D26 | Training Effectiveness Data Analysis  
+**Project:** P073 | Training Effectiveness Data Analysis  
 **Institution:** ABES Engineering College | MCA 2nd Year  
-**Programme / Batch:** MCA 2nd Year Data Analyst - ABES_OND26_MCA Batch 1  
+**Programme / Batch:** ABES_OND26_MCA 2nd Year_Data Analytics_Batch 01  
 **Presenter:** Shreyansh | Roll No: 2500320140140  
 **Mentor:** Dinesh Sereno  
 **Prepared For:** Executive Board & CHRO  
