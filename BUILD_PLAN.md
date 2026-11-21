@@ -1,9 +1,10 @@
 # BUILD PLAN & VIVA VOCE GUIDE (D26)
 **Project Title:** Training Effectiveness Data Analysis  
 **Institution:** ABES Engineering College, Ghaziabad  
-**Learner:** Shreyansh (Roll No: 2300320140045) | **Mentor:** Dr. R. K. Sharma  
-**Repository:** https://github.com/Shreyansh713/Training-Effectiveness-Analytics  
-**Live App:** https://training-effectiveness-analytics.streamlit.app  
+**Programme / Batch:** MCA 2nd Year Data Analyst - ABES_OND26_MCA Batch 1  
+**Learner:** Shreyansh (Roll No: 2500320140140) | **Mentor:** Dinesh Sereno  
+**Repository:** https://github.com/Shreyansh713/Training-Effectiveness-Analytics.git  
+**Live App:** https://training-effectiveness-analytics-jyzbvf3sktjk9wqhcrpddz.streamlit.app/  
 
 ---
 
@@ -33,12 +34,17 @@ Data_Analytics_Project/
 │   ├── 08_Database_Design.xlsx
 │   ├── 09_ER_Diagram.docx
 │   ├── 09_ER_Diagram.png
+│   ├── 10_Data_Dictionary.docx
 │   ├── 11_User_Stories.docx
 │   ├── 12_UI_Framework.docx
 │   ├── 13_Test_Cases.docx
 │   ├── 14_BUILD_PLAN.docx
+│   ├── 15_Application_Build_Integration.docx
+│   ├── 16_Cloud_Deployment_Guide.docx
 │   ├── D26_Project_Document.docx
-│   └── D26_Presentation.pptx
+│   ├── D26_Presentation.pptx
+│   └── Epics_User_Stories_Deliverables.xlsx
+├── Documents/                  # Companion deliverables directory (identical mirror)
 ├── notebooks/                  # Jupyter exploratory notebooks (01, 02, 03)
 ├── scripts/                    # Automation, cleaning, and doc generators
 ├── tests/                      # Automated pytest unit & integration suite

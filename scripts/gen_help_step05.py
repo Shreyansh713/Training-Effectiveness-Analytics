@@ -29,8 +29,8 @@ dc_data = [
     ["Author", "Shreyansh (Roll No: 2500320140140), MCA 2nd Year Data Analyst, ABES Engineering College"],
     ["Date Created", "21 November 2026"],
     ["Last Updated", "21 November 2026"],
-    ["Reviewer(s)", "Dr. Anjali Pandey (Project Mentor, ABES IT Department)"],
-    ["Approver", "Dr. Anjali Pandey"],
+    ["Reviewer(s)", "Dinesh Sereno (Project Mentor, ABES IT Department)"],
+    ["Approver", "Dinesh Sereno"],
     ["Sign-Off Status", "Pending Review"],
     ["Distribution", "Learner, Mentor, Academic Evaluation Panel"],
     ["Source Documents", "Step 1 (Project Understanding), Step 2 (HMW Statements), Step 3 (Needs Analysis), Step 4 (RTM)"]
@@ -366,7 +366,7 @@ sign_headers = ["Role", "Name", "Signature", "Date"]
 sign_widths = [2400, 3000, 2200, 2038]
 sign_data = [
     ["Author / Learner", "Shreyansh (Roll No: 2500320140140)", "___________________", "21/11/2026"],
-    ["Project Mentor / Reviewer", "Dr. Anjali Pandey (ABES IT Dept)", "___________________", "__/__/2026"],
+    ["Project Mentor / Reviewer", "Dinesh Sereno (ABES IT Dept)", "___________________", "__/__/2026"],
     ["Academic Evaluator", "[Evaluator Name]", "___________________", "__/__/2026"]
 ]
 t_sign = doc.add_table(rows=1, cols=4)

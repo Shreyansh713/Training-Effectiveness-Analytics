@@ -36,7 +36,7 @@ def build_abes_project_document():
     footer = section.footer
     fp = footer.paragraphs[0]
     fp.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    fp.text = "Shreyansh | 2300320140045     Page 1"
+    fp.text = "Shreyansh | 2500320140140     Page 1"
     for r in fp.runs:
         r.font.name = "Calibri"
         r.font.size = Pt(8)
@@ -95,10 +95,10 @@ def build_abes_project_document():
         ["Project ID & Title", "D26 - Training Effectiveness Data Analysis"],
         ["Domain", "Human Resources Analytics (Corporate Learning & Development)"],
         ["Programme / Batch", "MCA 2nd Year Data Analyst - ABES_OND26_MCA Batch 1"],
-        ["Learner(s) & Roll No(s)", "Shreyansh | Roll No: 2300320140045"],
-        ["Mentor", "Dr. R. K. Sharma (ABES IT Dept)"],
+        ["Learner(s) & Roll No(s)", "Shreyansh | Roll No: 2500320140140"],
+        ["Mentor", "Dinesh Sereno"],
         ["GitHub Repository", "https://github.com/Shreyansh713/Training-Effectiveness-Analytics.git"],
-        ["Live App (Streamlit)", "https://training-effectiveness-analytics.streamlit.app"],
+        ["Live App (Streamlit)", "https://training-effectiveness-analytics-jyzbvf3sktjk9wqhcrpddz.streamlit.app/"],
         ["Version & Date", "v1.0 - 21/11/2026"]
     ]
     t_meta = doc.add_table(rows=1, cols=2)
@@ -299,7 +299,7 @@ def build_abes_project_document():
     # SECTION 13: Deployment & Cloud Verification
     # =========================================================================
     dsu.add_heading_1(doc, "13. Deployment & Cloud Verification")
-    dsu.add_body_p(doc, "The production application is continuously deployed to Streamlit Community Cloud directly from the GitHub repository main branch. Pinned dependencies in requirements.txt ensure deterministic cloud builds. The live URL is: https://training-effectiveness-analytics.streamlit.app")
+    dsu.add_body_p(doc, "The production application is continuously deployed to Streamlit Community Cloud directly from the GitHub repository main branch. Pinned dependencies in requirements.txt ensure deterministic cloud builds. The live URL is: https://training-effectiveness-analytics-jyzbvf3sktjk9wqhcrpddz.streamlit.app/")
 
     # =========================================================================
     # SECTION 14: Key Findings

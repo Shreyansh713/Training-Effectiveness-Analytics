@@ -12,7 +12,7 @@ dsu.setup_page(doc, learner="Shreyansh", roll_no="2500320140140", project_id="D2
 
 # ── TITLE ──
 dsu.add_heading_1(doc, "STEP 1 — Project Understanding")
-dsu.add_callout(doc, "Project D26: Training Effectiveness Data Analysis | Domain: Human Resources Analytics (Corporate L&D) | Learner: Shreyansh (Roll 2500320140140) | Mentor: Dr. Anjali Pandey | ABES Engineering College, Ghaziabad", "PROJECT METADATA")
+dsu.add_callout(doc, "Project D26: Training Effectiveness Data Analysis | Domain: Human Resources Analytics (Corporate L&D) | Programme / Batch: MCA 2nd Year Data Analyst - ABES_OND26_MCA Batch 1 | Learner: Shreyansh (Roll 2500320140140) | Mentor: Dinesh Sereno | ABES Engineering College, Ghaziabad", "PROJECT METADATA")
 
 # ── 1. PROJECT OVERVIEW ──
 dsu.add_heading_2(doc, "1. Project Overview")

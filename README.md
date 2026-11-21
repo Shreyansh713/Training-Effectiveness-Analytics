@@ -23,11 +23,15 @@ The application features full end-to-end operational capabilities: **PBKDF2-SHA2
 | **Project Code** | **D26** |
 | **Project Title** | **Training Effectiveness Data Analysis** |
 | **Institution** | **ABES Engineering College \| MCA 2nd Year** |
+| **Programme / Batch** | **MCA 2nd Year Data Analyst - ABES_OND26_MCA Batch 1** |
+| **Learner** | **Shreyansh \| Roll No: 2500320140140** |
+| **Mentor** | **Dinesh Sereno** |
 | **Track** | **Data Analyst** |
 | **Curriculum Partner** | **Program Manager, EdTech, HCLTech** |
 | **Domain** | **Human Resources (HR) & Talent Analytics** |
 | **Primary Users** | **HR Manager, Head of L&D, Chief Human Resources Officer (CHRO), Department Leads** |
-| **Repository Name** | `mca2-da-training-effectiveness-data-analysis` |
+| **GitHub Repository** | `https://github.com/Shreyansh713/Training-Effectiveness-Analytics.git` |
+| **Live App (Streamlit)** | [Live Dashboard Application](https://training-effectiveness-analytics-jyzbvf3sktjk9wqhcrpddz.streamlit.app/) |
 | **Release Version** | `v1.0.0` (Sprint 3 Complete) |
 
 ---
@@ -151,10 +155,31 @@ interventions (id PK, employee_id FK, employee_name, department, action_type,
 ├── reports/
 │   ├── insight_report.md            # Comprehensive corporate HR analytics and findings report
 │   └── presentation.md              # Executive presentation slide deck for CHRO / Board
-├── docs/
+├── docs/                            # Markdown project docs and engineering deliverables
 │   ├── data_dictionary.md           # Full field specifications, data types, and value bounds
 │   ├── business_questions.md        # 10 core business questions & KPI formulas
-│   └── sprint_reviews.md            # Sprint 1 (v0.1.0), Sprint 2 (v0.2.0), Sprint 3 (v1.0.0) notes
+│   ├── sprint_reviews.md            # Sprint 1 (v0.1.0), Sprint 2 (v0.2.0), Sprint 3 (v1.0.0) notes
+│   └── ...                          # 18-step engineering documentation files (.docx, .xlsx, .pptx)
+├── Documents/                       # Academic 18-Step Deliverables Suite (Word, Excel, PowerPoint)
+│   ├── 01_Project_Understanding.docx
+│   ├── 02_HMW_Statements.docx
+│   ├── 03_Needs_Analysis.docx
+│   ├── 04_Traceability_Matrix.xlsx
+│   ├── 05_BRD.docx
+│   ├── 06_PRD.docx
+│   ├── 07_TRD.docx
+│   ├── 08_Database_Design.xlsx
+│   ├── 09_ER_Diagram.docx / .png
+│   ├── 10_Data_Dictionary.docx
+│   ├── 11_User_Stories.docx
+│   ├── 12_UI_Framework.docx
+│   ├── 13_Test_Cases.docx
+│   ├── 14_BUILD_PLAN.docx
+│   ├── 15_Application_Build_Integration.docx
+│   ├── 16_Cloud_Deployment_Guide.docx
+│   ├── D26_Project_Document.docx
+│   ├── D26_Presentation.pptx
+│   └── Epics_User_Stories_Deliverables.xlsx
 ├── scripts/
 │   ├── generate_data.py             # Realistic synthetic data generator with Indian context (seed 42)
 │   ├── clean_data.py                # Standalone data cleaning and feature engineering pipeline

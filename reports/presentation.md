@@ -2,8 +2,12 @@
 
 **Project:** D26 | Training Effectiveness Data Analysis  
 **Institution:** ABES Engineering College | MCA 2nd Year  
+**Programme / Batch:** MCA 2nd Year Data Analyst - ABES_OND26_MCA Batch 1  
+**Presenter:** Shreyansh | Roll No: 2500320140140  
+**Mentor:** Dinesh Sereno  
 **Prepared For:** Executive Board & CHRO  
 **Format:** Slide Deck (Markdown Presentation)  
+**Live App:** [Streamlit Dashboard](https://training-effectiveness-analytics-jyzbvf3sktjk9wqhcrpddz.streamlit.app/)  
 
 ---
 

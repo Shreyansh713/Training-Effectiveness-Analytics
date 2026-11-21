@@ -56,7 +56,7 @@ def create_presentation():
         f_right = slide.shapes.add_textbox(Inches(5.5), Inches(5.1), Inches(4.0), Inches(0.3))
         tf_r = f_right.text_frame
         p_r = tf_r.paragraphs[0]
-        p_r.text = "Shreyansh | Roll No: 2300320140045"
+        p_r.text = "Shreyansh | Roll No: 2500320140140"
         p_r.alignment = PP_ALIGN.RIGHT
         p_r.font.name = "Calibri"
         p_r.font.size = Pt(10)
@@ -155,13 +155,13 @@ def create_presentation():
     b_box = s1.shapes.add_textbox(Inches(0.8), Inches(3.6), Inches(8.4), Inches(1.2))
     tf1_b = b_box.text_frame
     p1_det = tf1_b.paragraphs[0]
-    p1_det.text = "Shreyansh | Roll No: 2300320140045 / MCA 2nd Year Data Analyst"
+    p1_det.text = "Shreyansh | Roll No: 2500320140140 / MCA 2nd Year Data Analyst"
     p1_det.font.name = "Calibri"
     p1_det.font.size = Pt(14)
     p1_det.font.color.rgb = C_WHITE
 
     p1_men = tf1_b.add_paragraph()
-    p1_men.text = "Mentor: Dr. R. K. Sharma | ABES Engineering College, Ghaziabad | November 2026"
+    p1_men.text = "Mentor: Dinesh Sereno | ABES Engineering College, Ghaziabad | November 2026"
     p1_men.font.name = "Calibri"
     p1_men.font.size = Pt(12)
     p1_men.font.color.rgb = C_PINK
@@ -564,7 +564,7 @@ def create_presentation():
     p11_code.font.color.rgb = C_PINK
 
     p11_dev = tf11_b.add_paragraph()
-    p11_dev.text = "Shreyansh | Roll No: 2300320140045 | ABES Engineering College"
+    p11_dev.text = "Shreyansh | Roll No: 2500320140140 | ABES Engineering College"
     p11_dev.font.name = "Calibri"
     p11_dev.font.size = Pt(12)
     p11_dev.font.color.rgb = C_WHITE
@@ -572,7 +572,8 @@ def create_presentation():
     s11.notes_slide.notes_text_frame.text = "I now open the floor for live demonstration of the TalentMetrics Streamlit platform and welcome any questions from the evaluators. Thank you."
 
     prs.save("docs/D26_Presentation.pptx")
-    print("Generated: docs/D26_Presentation.pptx")
+    prs.save("Documents/D26_Presentation.pptx")
+    print("Generated: docs/D26_Presentation.pptx and Documents/D26_Presentation.pptx")
 
 if __name__ == "__main__":
     create_presentation()

@@ -181,7 +181,7 @@ def build_step_05():
     dc_headers = ["Version", "Author", "Date", "Reviewer", "Sign-Off Status"]
     dc_widths = [1200, 2200, 1800, 2400, 2038]
     dc_data = [
-        ["v1.0", "Shreyansh (MCA 2nd Yr)", "21/11/2026", "Dr. R. K. Sharma (ABES)", "Approved"]
+        ["v1.0", "Shreyansh (Roll No: 2500320140140)", "21/11/2026", "Dinesh Sereno", "Approved"]
     ]
     t = doc.add_table(rows=1, cols=len(dc_headers))
     dsu.format_table(t, dc_widths, dc_headers, dc_data)
@@ -238,7 +238,7 @@ def build_step_06():
     dsu.add_heading_2(doc, "1. Product Overview & Target Personas")
     dsu.add_bullet_p(doc, "Vikram Malhotra, 48. Needs high-level executive cards, total budget burn vs ROI, and flight risk impact in under 3 clicks.", "Persona A (Executive CHRO): ")
     dsu.add_bullet_p(doc, "Pooja Sharma, 34. Needs deep-dive filtering by delivery mode, program comparison, and trainer feedback distributions.", "Persona B (L&D Program Lead): ")
-    dsu.add_bullet_p(doc, "Dr. R. K. Sharma, Academic Evaluator. Needs clear statistical rigor (paired t-test, Cohen's d), modular code, and complete test cases.", "Persona C (Academic Evaluator): ")
+    dsu.add_bullet_p(doc, "Dinesh Sereno, Academic Evaluator & Project Mentor. Needs clear statistical rigor (paired t-test, Cohen's d), modular code, and complete test cases.", "Persona C (Academic Mentor / Evaluator): ")
 
     dsu.add_heading_2(doc, "2. MVP Features Matrix")
     feat_headers = ["Feature ID", "Feature Name", "Description", "Linked BR", "Linked OQ", "Priority", "Target Screen"]
@@ -530,9 +530,10 @@ def build_step_14():
     md_content = """# BUILD PLAN & VIVA VOCE GUIDE (D26)
 **Project Title:** Training Effectiveness Data Analysis  
 **Institution:** ABES Engineering College, Ghaziabad  
-**Learner:** Shreyansh (Roll No: 2300320140045) | **Mentor:** Dr. R. K. Sharma  
-**Repository:** https://github.com/Shreyansh713/Training-Effectiveness-Analytics  
-**Live App:** https://training-effectiveness-analytics.streamlit.app  
+**Programme / Batch:** MCA 2nd Year Data Analyst - ABES_OND26_MCA Batch 1  
+**Learner:** Shreyansh (Roll No: 2500320140140) | **Mentor:** Dinesh Sereno  
+**Repository:** https://github.com/Shreyansh713/Training-Effectiveness-Analytics.git  
+**Live App:** https://training-effectiveness-analytics-jyzbvf3sktjk9wqhcrpddz.streamlit.app/  
 
 ---
 

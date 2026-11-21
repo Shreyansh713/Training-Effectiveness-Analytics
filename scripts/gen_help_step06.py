@@ -32,7 +32,7 @@ persona_data = [
     ["Primary:\nExecutive CHRO", "Vikram Malhotra, 48\nVP People at a 5,000-employee enterprise", "• Justify ₹14.9 Cr L&D budget to the Board\n• Identify flight risk in untrained cohorts\n• Forecast What-If budget scenarios", "Quarterly / Monthly", "UI-01 (Overview)\nUI-05 (Simulator)"],
     ["Secondary:\nL&D Program Lead", "Pooja Sharma, 34\nHead of Corporate Learning & Development", "• Benchmark programs by cost per uplift\n• Compare Online vs In-Person vs Hybrid\n• Spot trainer feedback anomalies", "Bi-weekly", "UI-03 (Benchmark)\nUI-04 (EDA)\nUI-02 (Dept)"],
     ["Operational:\nHR Business Partner", "Rahul Verma, 29\nHRBP assigned to Engineering division", "• Monitor department participation rates\n• Identify low-performers for remediation\n• Export filtered compliance reports", "Weekly", "UI-02 (Dept)\nUI-06 (Export)"],
-    ["Academic:\nProject Evaluator", "Dr. Anjali Pandey\nABES IT Department Mentor", "• Assess statistical rigour & methodology\n• Verify traceability & test coverage\n• Evaluate code quality & DB design", "One-time (review)", "All screens\n+ documentation"]
+    ["Academic:\nProject Evaluator", "Dinesh Sereno\nABES IT Department Mentor", "• Assess statistical rigour & methodology\n• Verify traceability & test coverage\n• Evaluate code quality & DB design", "One-time (review)", "All screens\n+ documentation"]
 ]
 t_persona = doc.add_table(rows=1, cols=5)
 dsu.format_table(t_persona, persona_widths, persona_headers, persona_data)
