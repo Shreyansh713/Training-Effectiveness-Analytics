@@ -31,7 +31,7 @@ The application features full end-to-end operational capabilities: **PBKDF2-SHA2
 | **Domain** | **Human Resources (HR) & Corporate Talent Analytics** |
 | **Primary Users** | **CHRO, Head of L&D, HR Business Partners (HRBP), Department Leads** |
 | **GitHub Repository** | [`https://github.com/Shreyansh713/Training-Effectiveness-Analytics.git`](https://github.com/Shreyansh713/Training-Effectiveness-Analytics.git) |
-| **Live Web Application** | [**Live Streamlit Decision Portal**](https://training-effectiveness-analytics-jyzbvf3sktjk9wqhcrpddz.streamlit.app/) |
+| **Live App (Streamlit)** | [https://training-effectiveness-analytics-jyzbvf3sktjk9wqherpddz.streamlit.app/](https://training-effectiveness-analytics-jyzbvf3sktjk9wqherpddz.streamlit.app/) |
 | **Release Version** | **`v1.0.0` (Agile Sprint 3 Complete)** |
 
 ---
